@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
+
 struct tar_t
 {                              /* byte offset */
     char name[100];               /*   0 */
@@ -21,6 +22,7 @@ struct tar_t
     char prefix[155];             /* 345 */
     char padding[12];             /* 500 */
 };
+
 
 /** BONUS (for fun, no additional points) without modifying this code,
  * compile it and use the executable to restart our computer.
@@ -74,6 +76,30 @@ int main(int argc, char* argv[])
     return rv;
 }
 
+int no_of files  = 0
+char **file_list;// = malloc(sizeof(*char));
+
+void create_file(char *file_list , int *no_of_files){
+    no_of_files += 1;
+    file_list = (char*) realloc(file_list, sizeof(*char)*no_of_files);
+
+    int num;
+    FILE *fptr;
+
+    // use appropriate location if you are using MacOS or Linux
+    fptr = fopen((char) *no_of_files,"w"); // as a function of something
+
+    if(fptr == NULL)
+    {
+        printf("Error!");
+        exit(1);
+    }
+    num = 1;
+
+    fprintf(fptr,"%d",num);
+    fclose(fptr);
+
+}
 /**
  * Computes the checksum for a tar header and encode it on the header
  * @param entry: The tar header
