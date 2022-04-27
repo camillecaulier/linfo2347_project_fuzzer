@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/linfo2347_project_fuzzer.iml" filepath="$PROJECT_DIR$/.idea/linfo2347_project_fuzzer.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/project.iml" filepath="$PROJECT_DIR$/.idea/project.iml" />
     </modules>
   </component>

@@ -1,6 +1,9 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/project.dir/fuzzer.c.o"
-  "project"
+  "CMakeFiles/project.dir/fuzzer.c.obj"
+  "CMakeFiles/project.dir/fuzzer.c.obj.d"
+  "libproject.dll.a"
+  "project.exe"
+  "project.exe.manifest"
   "project.pdb"
 )
 
