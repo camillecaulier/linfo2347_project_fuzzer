@@ -1,0 +1,6 @@
+how to create files for archive executable, c file , java, python
+Generation-based fuzzers generate valid input files based on the knowledge of the input format.
+To find vulnerabilities in the tested program, they often test extreme cases (e.g. very large numbers in an input field etc.)
+instrumentation guided fuzzers
+grammar fuzzers
+black box fuzzers
