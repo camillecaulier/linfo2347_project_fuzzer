@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
     char cmd[51];
     strncpy(cmd, argv[1], 25);
     cmd[26] = '\0';
-    strncat(cmd, " archive.tar", 25); //path of executable
+    strncat(cmd, " archive_test.tar", 25); //path of executable
     char buf[33];
     FILE *fp;
 
