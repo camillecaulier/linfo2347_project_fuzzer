@@ -4,4 +4,4 @@ project(project C)
 set(CMAKE_C_STANDARD 11)
 
 add_executable(project
-        fuzzer.c)
+        fuzzer.c help.c help_new.c archive_creator.c)

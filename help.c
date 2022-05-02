@@ -39,42 +39,41 @@ struct tar_t
  * BONUS (for fun, no additional marks) without modifying this code,
  * compile it and use the executable to restart our computer.
  */
-int main(int argc, char* argv[])
-{
-    if (argc < 2)
-        return -1;
-    int rv = 0;
-    char cmd[51];
-    strncpy(cmd, argv[1], 25);
-    cmd[26] = '\0';
-    strncat(cmd, " archive_test.tar", 25); //path of executable
-    char buf[33];
-    FILE *fp;
-
-    if ((fp = popen(cmd, "r")) == NULL) {
-        printf("Error opening pipe!\n");
-        return -1;
-    }
-
-    if(fgets(buf, 33, fp) == NULL) {
-        printf("No output\n");
-        goto finally;
-    }
-    if(strncmp(buf, "*** The program has crashed ***\n", 33)) {
-        printf("Not the crash message\n");
-        goto finally;
-    } else {
-        printf("Crash message\n");
-        rv = 1;
-        goto finally;
-    }
-    finally:
-    if(pclose(fp) == -1) {
-        printf("Command not found\n");
-        rv = -1;
-    }
-    return rv;
-}
+//int main(int argc, char* argv[]){
+//    if (argc < 2)
+//        return -1;
+//    int rv = 0;
+//    char cmd[51];
+//    strncpy(cmd, argv[1], 25);
+//    cmd[26] = '\0';
+//    strncat(cmd, " archive_test.tar", 25); //path of executable
+//    char buf[33];
+//    FILE *fp;
+//
+//    if ((fp = popen(cmd, "r")) == NULL) {
+//        printf("Error opening pipe!\n");
+//        return -1;
+//    }
+//
+//    if(fgets(buf, 33, fp) == NULL) {
+//        printf("No output\n");
+//        goto finally;
+//    }
+//    if(strncmp(buf, "*** The program has crashed ***\n", 33)) {
+//        printf("Not the crash message\n");
+//        goto finally;
+//    } else {
+//        printf("Crash message\n");
+//        rv = 1;
+//        goto finally;
+//    }
+//    finally:
+//    if(pclose(fp) == -1) {
+//        printf("Command not found\n");
+//        rv = -1;
+//    }
+//    return rv;
+//}
 
 
 /**
@@ -82,20 +81,20 @@ int main(int argc, char* argv[])
  * @param entry: The tar header
  * @return the value of the checksum
  */
-unsigned int calculate_checksum(struct tar_t* entry){
-    // use spaces for the checksum bytes while calculating the checksum
-    memset(entry->chksum, ' ', 8);
-
-    // sum of entire metadata
-    unsigned int check = 0;
-    unsigned char* raw = (unsigned char*) entry;
-    for(int i = 0; i < 512; i++){
-        check += raw[i];
-    }
-
-    snprintf(entry->chksum, sizeof(entry->chksum), "%06o0", check);
-
-    entry->chksum[6] = '\0';
-    entry->chksum[7] = ' ';
-    return check;
-}
+//unsigned int calculate_checksum(struct tar_t* entry){
+//    // use spaces for the checksum bytes while calculating the checksum
+//    memset(entry->chksum, ' ', 8);
+//
+//    // sum of entire metadata
+//    unsigned int check = 0;
+//    unsigned char* raw = (unsigned char*) entry;
+//    for(int i = 0; i < 512; i++){
+//        check += raw[i];
+//    }
+//
+//    snprintf(entry->chksum, sizeof(entry->chksum), "%06o0", check);
+//
+//    entry->chksum[6] = '\0';
+//    entry->chksum[7] = ' ';
+//    return check;
+//}
