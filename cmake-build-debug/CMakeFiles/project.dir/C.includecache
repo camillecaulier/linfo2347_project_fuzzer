@@ -6,9 +6,11 @@
 
 #IncludeRegexTransform: 
 
-/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/help.c
+/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/fuzzer.c
 stdio.h
 -
 string.h
+-
+stdlib.h
 -
 

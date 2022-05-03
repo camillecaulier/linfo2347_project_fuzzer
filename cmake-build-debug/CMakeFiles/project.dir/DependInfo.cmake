@@ -5,6 +5,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
   "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/archive_creator.c" "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/cmake-build-debug/CMakeFiles/project.dir/archive_creator.c.o"
+  "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/corporate_espionage.c" "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/cmake-build-debug/CMakeFiles/project.dir/corporate_espionage.c.o"
   "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/fuzzer.c" "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/cmake-build-debug/CMakeFiles/project.dir/fuzzer.c.o"
   "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/help.c" "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/cmake-build-debug/CMakeFiles/project.dir/help.c.o"
   "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/help_new.c" "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/cmake-build-debug/CMakeFiles/project.dir/help_new.c.o"

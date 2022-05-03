@@ -150,6 +150,33 @@ archive_creator.c.s:
 	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/archive_creator.c.s
 .PHONY : archive_creator.c.s
 
+corporate_espionage.o: corporate_espionage.c.o
+
+.PHONY : corporate_espionage.o
+
+# target to build an object file
+corporate_espionage.c.o:
+	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/corporate_espionage.c.o
+.PHONY : corporate_espionage.c.o
+
+corporate_espionage.i: corporate_espionage.c.i
+
+.PHONY : corporate_espionage.i
+
+# target to preprocess a source file
+corporate_espionage.c.i:
+	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/corporate_espionage.c.i
+.PHONY : corporate_espionage.c.i
+
+corporate_espionage.s: corporate_espionage.c.s
+
+.PHONY : corporate_espionage.s
+
+# target to generate assembly for a file
+corporate_espionage.c.s:
+	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/corporate_espionage.c.s
+.PHONY : corporate_espionage.c.s
+
 fuzzer.o: fuzzer.c.o
 
 .PHONY : fuzzer.o
@@ -243,6 +270,9 @@ help:
 	@echo "... archive_creator.o"
 	@echo "... archive_creator.i"
 	@echo "... archive_creator.s"
+	@echo "... corporate_espionage.o"
+	@echo "... corporate_espionage.i"
+	@echo "... corporate_espionage.s"
 	@echo "... fuzzer.o"
 	@echo "... fuzzer.i"
 	@echo "... fuzzer.s"

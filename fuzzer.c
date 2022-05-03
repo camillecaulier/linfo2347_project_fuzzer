@@ -114,11 +114,33 @@ struct tar_t create_name(struct tar_t* archive, int modify_field, int modificati
 
 
 
-struct tar_t create_header(int modify_field, int modification_type){//the field to modify and which type of modification
-    struct tar_t archive;
+struct tar_t create_archive_files(int modify_field, int modification_type,int no_files){//the field to modify and which type of modification
+//    struct tar_t archive;
+//    char name[100]= "archive/file1";
+//    printf("%s\n",name);
+//    printf("%c\n", name[12]);
+
+//    char name2[100] = "archive/file2";
+    struct tar_t *archive = malloc(sizeof(struct tar_t));
+    for(int i = 0 ; i < no_files;i++){
+
+//        char name[100] = "archive/file";//add at 12
+//        char *name = malloc(sizeof(char) *100);
+//        name = "archive/file";
+//        sprintf(&name[12], "%d",i);
+        char name[100];
+        strcpy(name,"archive/file");
+        strcpy(archive->name, "archive/file");
+
+        free(name);
+//        printf("%s",name);
+
+    }
     if (modify_field == 0 && modification_type == 0){
 
     }
+
+    return archive;
 }
 
 int run_extractor(int argc, char* argv[]){
@@ -128,7 +150,7 @@ int run_extractor(int argc, char* argv[]){
     char cmd[51];
     strncpy(cmd, argv[1], 25);
     cmd[26] = '\0';
-    strncat(cmd, " archive.tar", 25); //path of executable
+    strncat(cmd, " archive_test.tar", 25); //path of executable
     char buf[33];
     FILE *fp;
     printf(cmd);
@@ -213,6 +235,7 @@ int fuzzer(int argc, char argv[], FILE *fptr){
 
 int main(int argc, char* argv[]){
 //    printf(argv[1]);
+    create_archive_files(0,0,1);
     int run = run_extractor(argc, argv);
     FILE *fptr;
     fptr = fopen("archive_test.tar","w");

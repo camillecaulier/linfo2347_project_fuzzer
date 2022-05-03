@@ -79,6 +79,9 @@
 		<Unit filename="/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/archive_creator.c">
 			<Option target="project"/>
 		</Unit>
+		<Unit filename="/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/corporate_espionage.c">
+			<Option target="project"/>
+		</Unit>
 		<Unit filename="/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/fuzzer.c">
 			<Option target="project"/>
 		</Unit>
