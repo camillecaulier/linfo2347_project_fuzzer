@@ -4,6 +4,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/project.dir/fuzzer.c.o"
   "CMakeFiles/project.dir/help.c.o"
   "CMakeFiles/project.dir/help_new.c.o"
+  "CMakeFiles/project.dir/test_shit.c.o"
   "project"
   "project.pdb"
 )

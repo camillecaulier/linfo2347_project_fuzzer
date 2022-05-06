@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include <time.h>
 
 struct tar_t{
     /* byte offset */
@@ -30,6 +30,22 @@ struct tar_t{
     //don't forget the file
 
 };
+/* Bits used in the mode field, values in octal.  */
+//#define TSUID    04000          /* set UID on execution */
+//#define TSGID    02000          /* set GID on execution */
+//#define TSVTX    01000          /* reserved */
+///* file permissions */
+//#define TUREAD   00400          /* read by owner */
+//#define TUWRITE  00200          /* write by owner */
+//#define TUEXEC   00100          /* execute/search by owner */
+//#define TGREAD   00040          /* read by group */
+//#define TGWRITE  00020          /* write by group */
+//#define TGEXEC   00010          /* execute/search by group */
+//#define TOREAD   00004          /* read by other */
+//#define TOWRITE  00002          /* write by other */
+//#define TOEXEC   00001          /* execute/search by other */
+
+unsigned  char modes[12] = {04000, 02000,01000, 00400, 00200, 00100, 00040, 00020, 00010,00004,00002,00001};
 
 
 /**
@@ -112,35 +128,69 @@ struct tar_t create_name(struct tar_t* archive, int modify_field, int modificati
 
 }
 
+char* random_string(int size){
+    /*
+     * creates a random string and returns the pointer
+     */
+    char all_char[] = "`1234567890-=¬!\"£$%^&*()_+¦qwertyuiop[]QWERTYUIOP{}asdfghjkl;'#ASDFGHJKL:@~\\zxcvbnm,./|ZXCVBNM<>?";
+    char *random_string = NULL;
+    if(size>0){
+        random_string = malloc(sizeof(char)*(size + 1));
+        if(random_string){
+            for(int i = 0 ; i < size; i++){
+                int random_letter = rand() % (int)(sizeof(all_char)-1);
+                random_string[i] = all_char[random_letter];
+            }
+            random_string[size] = '\0';
+        }
+    }
+    return random_string;
 
+}
 
-struct tar_t create_archive_files(int modify_field, int modification_type,int no_files){//the field to modify and which type of modification
+void create_archive_files(int modify_field, int modification_type,int no_files){//the field to modify and which type of modification
 //    struct tar_t archive;
 //    char name[100]= "archive/file1";
 //    printf("%s\n",name);
 //    printf("%c\n", name[12]);
-
+    FILE *fptr;
+    fptr = fopen("archive.tar","w");
 //    char name2[100] = "archive/file2";
     struct tar_t *archive = malloc(sizeof(struct tar_t));
     for(int i = 0 ; i < no_files;i++){
 
-//        char name[100] = "archive/file";//add at 12
-//        char *name = malloc(sizeof(char) *100);
-//        name = "archive/file";
-//        sprintf(&name[12], "%d",i);
-        char name[100];
-        strcpy(name,"archive/file");
-        strcpy(archive->name, "archive/file");
 
-        free(name);
+//        strcpy(archive->name, "archive/file");
+        sprintf(archive->name,"file%o.txt",i );
+
+//        printf(" archive name : %s\n", archive->name);
+//        printf("archive/file%d\n",i );
+        sprintf(archive->size, "%o",512);
+        time_t rawtime;
+        sprintf(archive->mode, "%o", modes[4]);
+
+        sprintf(archive->mtime,"%o",localtime(&rawtime));
+        printf(archive->mtime);
+        printf("\n");
+        sprintf(archive->chksum, "%o",calculate_checksum(archive));
+        //two blocks of 512 null bytes
+        fwrite(archive,512, 1, fptr);
+        char *random_input = random_string(512);
+        fwrite(random_input,512,1,fptr);
+        free(random_input);
+        char  *nullblock = calloc(512,1);
+        fwrite(nullblock,512,2,fptr);
+        free(nullblock);
+
+//        free(name);
 //        printf("%s",name);
 
     }
     if (modify_field == 0 && modification_type == 0){
 
     }
-
-    return archive;
+    fclose(fptr);
+    return;
 }
 
 int run_extractor(int argc, char* argv[]){
@@ -150,10 +200,12 @@ int run_extractor(int argc, char* argv[]){
     char cmd[51];
     strncpy(cmd, argv[1], 25);
     cmd[26] = '\0';
-    strncat(cmd, " archive_test.tar", 25); //path of executable
+    strncat(cmd, " archive.tar", 25); //path of executable
+
     char buf[33];
     FILE *fp;
     printf(cmd);
+    printf("\n");
 
     if ((fp = popen(cmd, "r")) == NULL) {
         printf("Error opening pipe!\n");
@@ -194,33 +246,15 @@ int create_archive(FILE *fptr){
 
     return 1;
 }
-char *random_string(int size){
-    /*
-     * creates a random string and returns the pointer
-     */
-    char all_char[] = "`1234567890-=¬!\"£$%^&*()_+¦qwertyuiop[]QWERTYUIOP{}asdfghjkl;'#ASDFGHJKL:@~\\zxcvbnm,./|ZXCVBNM<>?";
-    char *random_string = NULL;
-    if(size>0){
-        random_string = malloc(sizeof(char)*(size + 1));
-        if(random_string){
-            for(int i = 0 ; i < size; i++){
-                int random_letter = rand() % (int)(sizeof(all_char)-1);
-                random_string[i] = all_char[random_letter];
-            }
-            random_string[size] = '\0';
-        }
-    }
-    return random_string;
 
-}
 
-int fuzzer(int argc, char argv[], FILE *fptr){
+int fuzzer(int argc, char argv[]){
     int total_bugs = 0;
     for(int i = 0 ; i < 10; i++){
-        int archive_check = create_archive(fptr);
-        if (!archive_check){
-            return 0;
-        }
+//        int archive_check = create_archive(fptr);
+//        if (!archive_check){
+//            return 0;
+//        }
         int extractor_val = run_extractor(argc, argv);
         if (extractor_val > 0){
             total_bugs += 1;
@@ -237,10 +271,10 @@ int main(int argc, char* argv[]){
 //    printf(argv[1]);
     create_archive_files(0,0,1);
     int run = run_extractor(argc, argv);
-    FILE *fptr;
-    fptr = fopen("archive_test.tar","w");
-    int run_fuzzer = fuzzer(argc, argv, fptr);
-    fclose(fptr);
+//    FILE *fptr;
+//    fptr = fopen("archive.tar","w");
+    int run_fuzzer = fuzzer(argc, argv);
+//    fclose(fptr);
     if(!run_fuzzer){
         printf("error");
         return 0;

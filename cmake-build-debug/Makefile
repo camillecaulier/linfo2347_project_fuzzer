@@ -258,6 +258,33 @@ help_new.c.s:
 	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/help_new.c.s
 .PHONY : help_new.c.s
 
+test_shit.o: test_shit.c.o
+
+.PHONY : test_shit.o
+
+# target to build an object file
+test_shit.c.o:
+	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/test_shit.c.o
+.PHONY : test_shit.c.o
+
+test_shit.i: test_shit.c.i
+
+.PHONY : test_shit.i
+
+# target to preprocess a source file
+test_shit.c.i:
+	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/test_shit.c.i
+.PHONY : test_shit.c.i
+
+test_shit.s: test_shit.c.s
+
+.PHONY : test_shit.s
+
+# target to generate assembly for a file
+test_shit.c.s:
+	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/test_shit.c.s
+.PHONY : test_shit.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -282,6 +309,9 @@ help:
 	@echo "... help_new.o"
 	@echo "... help_new.i"
 	@echo "... help_new.s"
+	@echo "... test_shit.o"
+	@echo "... test_shit.i"
+	@echo "... test_shit.s"
 .PHONY : help
 
 

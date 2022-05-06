@@ -11,3 +11,5 @@ CMakeFiles/project.dir/help.c.o: ../help.c
 
 CMakeFiles/project.dir/help_new.c.o: ../help_new.c
 
+CMakeFiles/project.dir/test_shit.c.o: ../test_shit.c
+
