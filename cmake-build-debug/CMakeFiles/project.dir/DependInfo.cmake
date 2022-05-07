@@ -6,9 +6,9 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_CHECK_C
   "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/archive_creator.c" "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/cmake-build-debug/CMakeFiles/project.dir/archive_creator.c.o"
   "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/corporate_espionage.c" "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/cmake-build-debug/CMakeFiles/project.dir/corporate_espionage.c.o"
-  "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/fuzzer.c" "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/cmake-build-debug/CMakeFiles/project.dir/fuzzer.c.o"
   "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/help.c" "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/cmake-build-debug/CMakeFiles/project.dir/help.c.o"
   "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/help_new.c" "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/cmake-build-debug/CMakeFiles/project.dir/help_new.c.o"
+  "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/src/fuzzer.c" "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/cmake-build-debug/CMakeFiles/project.dir/src/fuzzer.c.o"
   "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/test_shit.c" "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/cmake-build-debug/CMakeFiles/project.dir/test_shit.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")

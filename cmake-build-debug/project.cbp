@@ -82,13 +82,13 @@
 		<Unit filename="/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/corporate_espionage.c">
 			<Option target="project"/>
 		</Unit>
-		<Unit filename="/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/fuzzer.c">
-			<Option target="project"/>
-		</Unit>
 		<Unit filename="/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/help.c">
 			<Option target="project"/>
 		</Unit>
 		<Unit filename="/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/help_new.c">
+			<Option target="project"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/src/fuzzer.c">
 			<Option target="project"/>
 		</Unit>
 		<Unit filename="/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/test_shit.c">

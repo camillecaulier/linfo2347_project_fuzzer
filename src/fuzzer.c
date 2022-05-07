@@ -61,7 +61,7 @@ unsigned int calculate_checksum(struct tar_t* entry){
     // sum of entire metadata
     unsigned int check = 0;
     unsigned char* raw = (unsigned char*) entry;
-    for(int i = 0; i < 512; i++){
+    for(int i = 0; i < 512  ; i++){
         // printf(" rawi is : %ld \n",raw[i]);
         check += raw[i];
     }
@@ -78,63 +78,21 @@ void fexpand(FILE* f, size_t amount, int value){
         fputc( value, f );
     }
 }
-void tar_add(FILE* tar_file, const char* file, const char* internal_name){
-    //Get current position; round to a multiple of 512 if we aren't there already
-    size_t index = ftell( tar_file );
-    size_t offset = index % 512;
-    if( offset != 0 ){
-        fexpand( tar_file, 512 - offset, 0);
+unsigned int oct2uint(char * oct, unsigned int size){
+    unsigned int out = 0;
+    int i = 0;
+    while ((i < size) && oct[i]){
+        out = (out << 3) | (unsigned int) (oct[i++] - '0');
     }
-    //Store the index for the header to return to later
-    index = ftell( tar_file );
-    //Write some space for our header
-    fexpand( tar_file, sizeof(struct tar_t), 0 );
-    //Write the input file to the tar file
-    FILE* input = fopen( file, "rb" );
-    if( input == NULL ){
-        fprintf( stderr, "Failed to open %s for reading\n", file);
-        return;
-    }
-    //Copy the file content to the tar file
-    while( !feof(input) ){
-        char buffer[2000];
-        size_t read = fread( buffer, 1, 2000, input );
-        fwrite( buffer, 1, read, tar_file);
-    }
-    //Get the end to calculate the size of the file
-    size_t end = ftell( tar_file );
-    //Round the file size to a multiple of 512 bytes
-    offset = end % 512;
-    if( end != 0 ){
-        fexpand( tar_file, 512 - offset, 0);
-    }
-    //Fill out a new tar header
-    struct tar_t header;
-    //Calculate the checksum
-    size_t checksum = 0;
-    int i;
-    const unsigned char* bytes = &header;
-    //Save the new end to return to after writing the header
-    end = ftell(tar_file);
-
-    //Write the header
-    fseek( tar_file, index, SEEK_SET );
-    fwrite( bytes, 1, sizeof( struct tar_t ), tar_file );
-
-    //Return to the end
-    fseek( tar_file, end, SEEK_SET );
-    fclose( input );
+    return out;
 }
 
-struct tar_t create_name(struct tar_t* archive, int modify_field, int modification_type){
-
-}
 
 char* random_string(int size){
     /*
      * creates a random string and returns the pointer
      */
-    char all_char[] = "`1234567890-=¬!\"£$%^&*()_+¦qwertyuiop[]QWERTYUIOP{}asdfghjkl;'#ASDFGHJKL:@~\\zxcvbnm,./|ZXCVBNM<>?";
+    char all_char[] = "`1234567890-=¬!\"£$%^&*()_+¦qwertyuiop[]QWERTYUIOP{}asdfghjkl;'#ASDFGHJKL:@~\\zxcvbnm,./|ZXCVBNM<>?\n";
     char *random_string = NULL;
     if(size>0){
         random_string = malloc(sizeof(char)*(size + 1));
@@ -160,39 +118,51 @@ void create_archive_files(int modify_field, int modification_type,int no_files){
 //    char name2[100] = "archive/file2";
     for(int i = 0 ; i < no_files;i++){
 
-        struct tar_t *archive = malloc(sizeof(struct tar_t));
-
+        struct tar_t *archive = calloc(1 , sizeof(struct tar_t));
+//        struct tar_t *archive = malloc(512);
+//        memset(archive, ' ', 512);
 //        strcpy(archive->name, "archive/file");
         // sprintf(archive->name,"file_%o.txt",i );
         
-        snprintf(archive->name,sizeof(archive->name),"archive.tar");
-//        printf(" archive name : %s\n", archive->name);
-//        printf("archive/file%d\n",i );
-        snprintf(archive->size,sizeof(archive->size), "%o",512);
+        snprintf(archive->name,sizeof(archive->name),"archive.txt");
+        printf(" archive name : %s\n", archive->name);
+
+
+        snprintf(archive->size,sizeof(archive->size), "%d",512);
+        printf("archive size : %s\n",archive->size);
         time_t rawtime;
-        snprintf(archive->mode,sizeof(archive->mode), "%o", modes[4]);
+        snprintf(archive->mode,sizeof(archive->mode), "%c", modes[4]);
+//        snprintf(archive->uid, sizeof(archive->uid), "%o, )
+        memset(archive->uid, '\0', 8);
+        printf(" arhcive uid: %s\n ", archive->uid);
+        printf("archive mode : %o\n",archive->mode);
+        fprintf(stdout, "File Mode: %s (%03o)\n", archive -> mode, oct2uint(archive -> mode, 8));
         time_t now = time(NULL);
         printf("\n");
         printf("%o\n", now);
 
 
         snprintf(archive->mtime,sizeof(archive->mtime),"%o",now);
+//        snprintf(archive->magic,sizeof())
         memcpy(archive->magic,TMAGIC,sizeof(archive->magic));
         char version [2] = {'0','0'};
         memcpy(archive->version,version,sizeof(version));
 
         printf("\n");
-        printf("this is before the chksum : %06o0\n",archive->chksum);
+        printf("this is before the chksum : %s\n",archive->chksum);
+//        fflush(stdout);
         calculate_checksum(archive);
-        printf("this is the chksum : %06o0\n",archive->chksum);
+        printf("this is the chksum : %s\n",archive->chksum);
         //two blocks of 512 null bytes
         fwrite(archive,512, 1, fptr);
         char *random_input = random_string(512);
         fwrite(random_input,512,1,fptr);
         free(random_input);
-        char  *nullblock = calloc(512,1);
-        fwrite(nullblock,512,2,fptr);
-        free(nullblock);
+//        char  *nullblock = calloc(512,2);
+//        char *nullblock = malloc(512);
+//        memset(nullblock,' ',512);
+//        fwrite(nullblock,1024,1,fptr);
+//        free(nullblock);
 
         
 //        free(name);

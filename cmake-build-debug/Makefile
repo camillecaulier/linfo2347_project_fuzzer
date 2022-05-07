@@ -177,33 +177,6 @@ corporate_espionage.c.s:
 	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/corporate_espionage.c.s
 .PHONY : corporate_espionage.c.s
 
-fuzzer.o: fuzzer.c.o
-
-.PHONY : fuzzer.o
-
-# target to build an object file
-fuzzer.c.o:
-	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/fuzzer.c.o
-.PHONY : fuzzer.c.o
-
-fuzzer.i: fuzzer.c.i
-
-.PHONY : fuzzer.i
-
-# target to preprocess a source file
-fuzzer.c.i:
-	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/fuzzer.c.i
-.PHONY : fuzzer.c.i
-
-fuzzer.s: fuzzer.c.s
-
-.PHONY : fuzzer.s
-
-# target to generate assembly for a file
-fuzzer.c.s:
-	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/fuzzer.c.s
-.PHONY : fuzzer.c.s
-
 help.o: help.c.o
 
 .PHONY : help.o
@@ -258,6 +231,33 @@ help_new.c.s:
 	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/help_new.c.s
 .PHONY : help_new.c.s
 
+src/fuzzer.o: src/fuzzer.c.o
+
+.PHONY : src/fuzzer.o
+
+# target to build an object file
+src/fuzzer.c.o:
+	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/src/fuzzer.c.o
+.PHONY : src/fuzzer.c.o
+
+src/fuzzer.i: src/fuzzer.c.i
+
+.PHONY : src/fuzzer.i
+
+# target to preprocess a source file
+src/fuzzer.c.i:
+	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/src/fuzzer.c.i
+.PHONY : src/fuzzer.c.i
+
+src/fuzzer.s: src/fuzzer.c.s
+
+.PHONY : src/fuzzer.s
+
+# target to generate assembly for a file
+src/fuzzer.c.s:
+	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/src/fuzzer.c.s
+.PHONY : src/fuzzer.c.s
+
 test_shit.o: test_shit.c.o
 
 .PHONY : test_shit.o
@@ -300,15 +300,15 @@ help:
 	@echo "... corporate_espionage.o"
 	@echo "... corporate_espionage.i"
 	@echo "... corporate_espionage.s"
-	@echo "... fuzzer.o"
-	@echo "... fuzzer.i"
-	@echo "... fuzzer.s"
 	@echo "... help.o"
 	@echo "... help.i"
 	@echo "... help.s"
 	@echo "... help_new.o"
 	@echo "... help_new.i"
 	@echo "... help_new.s"
+	@echo "... src/fuzzer.o"
+	@echo "... src/fuzzer.i"
+	@echo "... src/fuzzer.s"
 	@echo "... test_shit.o"
 	@echo "... test_shit.i"
 	@echo "... test_shit.s"

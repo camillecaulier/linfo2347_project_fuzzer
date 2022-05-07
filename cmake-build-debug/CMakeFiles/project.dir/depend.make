@@ -5,11 +5,11 @@ CMakeFiles/project.dir/archive_creator.c.o: ../archive_creator.c
 
 CMakeFiles/project.dir/corporate_espionage.c.o: ../corporate_espionage.c
 
-CMakeFiles/project.dir/fuzzer.c.o: ../fuzzer.c
-
 CMakeFiles/project.dir/help.c.o: ../help.c
 
 CMakeFiles/project.dir/help_new.c.o: ../help_new.c
+
+CMakeFiles/project.dir/src/fuzzer.c.o: ../src/fuzzer.c
 
 CMakeFiles/project.dir/test_shit.c.o: ../test_shit.c
 

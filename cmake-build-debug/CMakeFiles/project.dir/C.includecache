@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/fuzzer.c
+/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/src/fuzzer.c
 stdio.h
 -
 string.h

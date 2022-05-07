@@ -57,18 +57,18 @@ include CMakeFiles/project.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/project.dir/flags.make
 
-CMakeFiles/project.dir/fuzzer.c.o: CMakeFiles/project.dir/flags.make
-CMakeFiles/project.dir/fuzzer.c.o: ../fuzzer.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/project.dir/fuzzer.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/project.dir/fuzzer.c.o   -c /mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/fuzzer.c
+CMakeFiles/project.dir/src/fuzzer.c.o: CMakeFiles/project.dir/flags.make
+CMakeFiles/project.dir/src/fuzzer.c.o: ../src/fuzzer.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/project.dir/src/fuzzer.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/project.dir/src/fuzzer.c.o   -c /mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/src/fuzzer.c
 
-CMakeFiles/project.dir/fuzzer.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/project.dir/fuzzer.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/fuzzer.c > CMakeFiles/project.dir/fuzzer.c.i
+CMakeFiles/project.dir/src/fuzzer.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/project.dir/src/fuzzer.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/src/fuzzer.c > CMakeFiles/project.dir/src/fuzzer.c.i
 
-CMakeFiles/project.dir/fuzzer.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/project.dir/fuzzer.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/fuzzer.c -o CMakeFiles/project.dir/fuzzer.c.s
+CMakeFiles/project.dir/src/fuzzer.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/project.dir/src/fuzzer.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/src/fuzzer.c -o CMakeFiles/project.dir/src/fuzzer.c.s
 
 CMakeFiles/project.dir/help.c.o: CMakeFiles/project.dir/flags.make
 CMakeFiles/project.dir/help.c.o: ../help.c
@@ -137,7 +137,7 @@ CMakeFiles/project.dir/test_shit.c.s: cmake_force
 
 # Object files for target project
 project_OBJECTS = \
-"CMakeFiles/project.dir/fuzzer.c.o" \
+"CMakeFiles/project.dir/src/fuzzer.c.o" \
 "CMakeFiles/project.dir/help.c.o" \
 "CMakeFiles/project.dir/help_new.c.o" \
 "CMakeFiles/project.dir/archive_creator.c.o" \
@@ -147,7 +147,7 @@ project_OBJECTS = \
 # External object files for target project
 project_EXTERNAL_OBJECTS =
 
-project: CMakeFiles/project.dir/fuzzer.c.o
+project: CMakeFiles/project.dir/src/fuzzer.c.o
 project: CMakeFiles/project.dir/help.c.o
 project: CMakeFiles/project.dir/help_new.c.o
 project: CMakeFiles/project.dir/archive_creator.c.o
