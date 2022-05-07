@@ -44,7 +44,8 @@ struct tar_t{
 //#define TOREAD   00004          /* read by other */
 //#define TOWRITE  00002          /* write by other */
 //#define TOEXEC   00001          /* execute/search by other */
-
+#define TMAGIC   "ustar\0" 
+#define TVERSION 00
 unsigned  char modes[12] = {04000, 02000,01000, 00400, 00200, 00100, 00040, 00020, 00010,00004,00002,00001};
 
 
@@ -61,6 +62,7 @@ unsigned int calculate_checksum(struct tar_t* entry){
     unsigned int check = 0;
     unsigned char* raw = (unsigned char*) entry;
     for(int i = 0; i < 512; i++){
+        // printf(" rawi is : %ld \n",raw[i]);
         check += raw[i];
     }
 
@@ -156,23 +158,33 @@ void create_archive_files(int modify_field, int modification_type,int no_files){
     FILE *fptr;
     fptr = fopen("archive.tar","w");
 //    char name2[100] = "archive/file2";
-    struct tar_t *archive = malloc(sizeof(struct tar_t));
     for(int i = 0 ; i < no_files;i++){
 
+        struct tar_t *archive = malloc(sizeof(struct tar_t));
 
 //        strcpy(archive->name, "archive/file");
-        sprintf(archive->name,"file%o.txt",i );
-
+        // sprintf(archive->name,"file_%o.txt",i );
+        
+        snprintf(archive->name,sizeof(archive->name),"archive.tar");
 //        printf(" archive name : %s\n", archive->name);
 //        printf("archive/file%d\n",i );
-        sprintf(archive->size, "%o",512);
+        snprintf(archive->size,sizeof(archive->size), "%o",512);
         time_t rawtime;
-        sprintf(archive->mode, "%o", modes[4]);
-
-        sprintf(archive->mtime,"%o",localtime(&rawtime));
-        printf(archive->mtime);
+        snprintf(archive->mode,sizeof(archive->mode), "%o", modes[4]);
+        time_t now = time(NULL);
         printf("\n");
-        sprintf(archive->chksum, "%o",calculate_checksum(archive));
+        printf("%o\n", now);
+
+
+        snprintf(archive->mtime,sizeof(archive->mtime),"%o",now);
+        memcpy(archive->magic,TMAGIC,sizeof(archive->magic));
+        char version [2] = {'0','0'};
+        memcpy(archive->version,version,sizeof(version));
+
+        printf("\n");
+        printf("this is before the chksum : %06o0\n",archive->chksum);
+        calculate_checksum(archive);
+        printf("this is the chksum : %06o0\n",archive->chksum);
         //two blocks of 512 null bytes
         fwrite(archive,512, 1, fptr);
         char *random_input = random_string(512);
@@ -182,6 +194,7 @@ void create_archive_files(int modify_field, int modification_type,int no_files){
         fwrite(nullblock,512,2,fptr);
         free(nullblock);
 
+        
 //        free(name);
 //        printf("%s",name);
 
@@ -232,20 +245,20 @@ int run_extractor(int argc, char* argv[]){
     }
     return rv;
 }
-int create_archive(FILE *fptr){
+// int create_archive(FILE *fptr){
 
 
 
-    if(fptr == NULL){
-        printf("Error!");
-        return 0;
-    }
-    struct tar_t archive;
-    calculate_checksum(&archive);
-    fwrite (&archive, sizeof(struct tar_t), 1, fptr);
+//     if(fptr == NULL){
+//         printf("Error!");
+//         return 0;
+//     }
+//     struct tar_t archive;
+//     calculate_checksum(&archive);
+//     fwrite (&archive, sizeof(struct tar_t), 1, fptr);
 
-    return 1;
-}
+//     return 1;
+// }
 
 
 int fuzzer(int argc, char argv[]){
