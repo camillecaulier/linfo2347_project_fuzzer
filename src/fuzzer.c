@@ -118,32 +118,41 @@ void create_archive_files(int modify_field, int modification_type,int no_files){
 //    char name2[100] = "archive/file2";
     for(int i = 0 ; i < no_files;i++){
 
-        struct tar_t *archive = calloc(1 , sizeof(struct tar_t));
+        struct tar_t *archive = malloc(sizeof(struct tar_t));
 //        struct tar_t *archive = malloc(512);
 //        memset(archive, ' ', 512);
 //        strcpy(archive->name, "archive/file");
         // sprintf(archive->name,"file_%o.txt",i );
-        
-        snprintf(archive->name,sizeof(archive->name),"archive.txt");
+        memset(archive->name, ' ',100);
+        char name [100] = {'a','r','c','h','i','v','e','.','t','x','t',0};
+        name[99] = '\0';
+        memcpy(archive->name,name,sizeof(archive->name));
+
         printf(" archive name : %s\n", archive->name);
 
-
-        snprintf(archive->size,sizeof(archive->size), "%d",512);
+        memset(archive->size, NULL,12);
+        snprintf(archive->size,sizeof(archive->size), "%o",512);
+        
         printf("archive size : %s\n",archive->size);
+        memset(archive->mode,NULL,8);
+        snprintf(archive->mode,sizeof(archive->mode),"%o",000200);
         time_t rawtime;
-        snprintf(archive->mode,sizeof(archive->mode), "%c", modes[4]);
+        
 //        snprintf(archive->uid, sizeof(archive->uid), "%o, )
-        memset(archive->uid, '\0', 8);
+        memset(archive->uid, NULL, 8);
+        snprintf(archive->uid,sizeof(archive->uid), "%o", 04000);
         printf(" arhcive uid: %s\n ", archive->uid);
-        printf("archive mode : %o\n",archive->mode);
-        fprintf(stdout, "File Mode: %s (%03o)\n", archive -> mode, oct2uint(archive -> mode, 8));
         time_t now = time(NULL);
         printf("\n");
         printf("%o\n", now);
+        memset(archive->uname, ' ',32);
+        snprintf(archive->uname,sizeof(archive->uname), "charles");
 
-
+        memset(archive->mtime, NULL, 12);
         snprintf(archive->mtime,sizeof(archive->mtime),"%o",now);
+        printf("time is %ld \n",archive->mtime);
 //        snprintf(archive->magic,sizeof())
+        memset(archive->magic, '\0', 8);
         memcpy(archive->magic,TMAGIC,sizeof(archive->magic));
         char version [2] = {'0','0'};
         memcpy(archive->version,version,sizeof(version));
@@ -158,11 +167,11 @@ void create_archive_files(int modify_field, int modification_type,int no_files){
         char *random_input = random_string(512);
         fwrite(random_input,512,1,fptr);
         free(random_input);
-//        char  *nullblock = calloc(512,2);
-//        char *nullblock = malloc(512);
-//        memset(nullblock,' ',512);
-//        fwrite(nullblock,1024,1,fptr);
-//        free(nullblock);
+    //    char  *nullblock = calloc(512,2);
+       char *nullblock = malloc(512);
+    //    memset(nullblock,' \0',512);
+       fwrite(nullblock,1024,1,fptr);
+       free(nullblock);
 
         
 //        free(name);
