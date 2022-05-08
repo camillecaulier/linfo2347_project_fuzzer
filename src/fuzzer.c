@@ -44,7 +44,7 @@ struct tar_t{
 //#define TOREAD   00004          /* read by other */
 //#define TOWRITE  00002          /* write by other */
 //#define TOEXEC   00001          /* execute/search by other */
-#define TMAGIC   "ustar\0" 
+#define TMAGIC   "ustar" 
 #define TVERSION 00
 unsigned  char modes[12] = {04000, 02000,01000, 00400, 00200, 00100, 00040, 00020, 00010,00004,00002,00001};
 
@@ -123,39 +123,55 @@ void create_archive_files(int modify_field, int modification_type,int no_files){
 //        memset(archive, ' ', 512);
 //        strcpy(archive->name, "archive/file");
         // sprintf(archive->name,"file_%o.txt",i );
-        memset(archive->name, ' ',100);
-        char name [100] = {'a','r','c','h','i','v','e','.','t','x','t',0};
+        // memset(archive->name, ' ',100);
+        char name [100] = {'a','r','c','h','i','v','e','.','t','x','t'};
         name[99] = '\0';
-        memcpy(archive->name,name,sizeof(archive->name));
-
+        snprintf(archive->name,sizeof(name),name);
         printf(" archive name : %s\n", archive->name);
 
-        memset(archive->size, NULL,12);
-        snprintf(archive->size,sizeof(archive->size), "%o",512);
-        
-        printf("archive size : %s\n",archive->size);
         memset(archive->mode,NULL,8);
-        snprintf(archive->mode,sizeof(archive->mode),"%o",000200);
-        time_t rawtime;
-        
-//        snprintf(archive->uid, sizeof(archive->uid), "%o, )
-        memset(archive->uid, NULL, 8);
-        snprintf(archive->uid,sizeof(archive->uid), "%o", 04000);
-        printf(" arhcive uid: %s\n ", archive->uid);
-        time_t now = time(NULL);
-        printf("\n");
-        printf("%o\n", now);
-        memset(archive->uname, ' ',32);
-        snprintf(archive->uname,sizeof(archive->uname), "charles");
+        snprintf(archive->mode,sizeof(archive->mode),"%s","0000777");
 
+        char uid[8] = {'0','0','0','0','0','0','0'};
+        uid[7] = '\0';
+        snprintf(archive->uid,sizeof(archive->uid), uid);
+        printf(" arhcive uid: %s\n ", archive->uid);      
+        printf("\n");
+
+        memset(archive->gid,' ',8);
+        snprintf(archive->gid,sizeof(archive->gid), "%s", "0000000");
+
+
+        memset(archive->size, NULL,12);
+        snprintf(archive->size,sizeof(archive->size), "%s","00000000066");
+        printf("archive size : %s\n",archive->size);
+
+
+        time_t now = time(NULL);
         memset(archive->mtime, NULL, 12);
         snprintf(archive->mtime,sizeof(archive->mtime),"%o",now);
-        printf("time is %ld \n",archive->mtime);
-//        snprintf(archive->magic,sizeof())
+        printf("%o\n", now);
+
+        archive->typeflag = '0';
+
         memset(archive->magic, '\0', 8);
         memcpy(archive->magic,TMAGIC,sizeof(archive->magic));
+
         char version [2] = {'0','0'};
         memcpy(archive->version,version,sizeof(version));
+
+
+        memset(archive->uname, NULL,32);
+        snprintf(archive->uname,sizeof(archive->uname), "charles");
+
+        memset(archive->gname, NULL,32);
+        snprintf(archive->gname,sizeof(archive->gname), "charles");
+
+        memset(archive->devmajor, NULL ,8);
+        snprintf(archive->devmajor,sizeof(archive->devmajor), "0000000");
+
+        memset(archive->devminor, NULL ,8);
+        snprintf(archive->devminor,sizeof(archive->devminor), "0000000");
 
         printf("\n");
         printf("this is before the chksum : %s\n",archive->chksum);
