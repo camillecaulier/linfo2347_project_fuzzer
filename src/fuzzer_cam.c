@@ -101,9 +101,16 @@ void create_archive_cam(){
 //    if (grp){
 //        strncpy(entry -> group, grp -> gr_name, sizeof(entry -> group) - 1);
 //    }
-    unsigned char devmajor[]  = {major(st.st_rdev)};//"%07o"
-    unsigned char devminor[]  = {minor(st.st_rdev)} ;//"%07o"
-
+    int eof[5] = {-2,-1,0,1,2};
+    int selection[8] = {0,0,0,0,0,0,0,0}; //this would mean we tae take the first choice of everything
+    test_number = 0;
+    archive
+    while(test_number < maxtest){
+        namenumber = test number % maxname;
+        snprintf(archive->name,sizeof(archive->name),name[namenumebr]);
+        name
+        create name( testnumber%number of name, )
+    }
 
 
 
