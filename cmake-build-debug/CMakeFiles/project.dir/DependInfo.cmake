@@ -9,6 +9,7 @@ set(CMAKE_DEPENDS_CHECK_C
   "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/help.c" "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/cmake-build-debug/CMakeFiles/project.dir/help.c.o"
   "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/help_new.c" "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/cmake-build-debug/CMakeFiles/project.dir/help_new.c.o"
   "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/src/fuzzer.c" "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/cmake-build-debug/CMakeFiles/project.dir/src/fuzzer.c.o"
+  "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/src/fuzzer_cam.c" "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/cmake-build-debug/CMakeFiles/project.dir/src/fuzzer_cam.c.o"
   "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/test_shit.c" "/mnt/c/Users/Camil/OneDrive/Documents/masters/LINFO2347_Computer_system_security/project/cmake-build-debug/CMakeFiles/project.dir/test_shit.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")

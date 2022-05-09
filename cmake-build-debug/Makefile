@@ -258,6 +258,33 @@ src/fuzzer.c.s:
 	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/src/fuzzer.c.s
 .PHONY : src/fuzzer.c.s
 
+src/fuzzer_cam.o: src/fuzzer_cam.c.o
+
+.PHONY : src/fuzzer_cam.o
+
+# target to build an object file
+src/fuzzer_cam.c.o:
+	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/src/fuzzer_cam.c.o
+.PHONY : src/fuzzer_cam.c.o
+
+src/fuzzer_cam.i: src/fuzzer_cam.c.i
+
+.PHONY : src/fuzzer_cam.i
+
+# target to preprocess a source file
+src/fuzzer_cam.c.i:
+	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/src/fuzzer_cam.c.i
+.PHONY : src/fuzzer_cam.c.i
+
+src/fuzzer_cam.s: src/fuzzer_cam.c.s
+
+.PHONY : src/fuzzer_cam.s
+
+# target to generate assembly for a file
+src/fuzzer_cam.c.s:
+	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/src/fuzzer_cam.c.s
+.PHONY : src/fuzzer_cam.c.s
+
 test_shit.o: test_shit.c.o
 
 .PHONY : test_shit.o
@@ -309,6 +336,9 @@ help:
 	@echo "... src/fuzzer.o"
 	@echo "... src/fuzzer.i"
 	@echo "... src/fuzzer.s"
+	@echo "... src/fuzzer_cam.o"
+	@echo "... src/fuzzer_cam.i"
+	@echo "... src/fuzzer_cam.s"
 	@echo "... test_shit.o"
 	@echo "... test_shit.i"
 	@echo "... test_shit.s"
