@@ -5,10 +5,18 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/sysmacros.h>
+#include <sys/select.h>
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <sys/types.h>
 
-struct tar_t{
-    /* byte offset */
-    char name[100];               /*   0 */ //nothing, something good, confusing random, big
+
+static char extractor[100];
+static int correct = 0;
+
+struct tar_t {                              /* byte offset */
+    char name[100];               /*   0 */
     char mode[8];                 /* 100 */
     char uid[8];                  /* 108 */
     char gid[8];                  /* 116 */
@@ -25,289 +33,26 @@ struct tar_t{
     char devminor[8];             /* 337 */
     char prefix[155];             /* 345 */
     char padding[12];             /* 500 */
-
-
 };
 
 #define TMAGIC   "ustar\x00" 
-#define TVERSION 00
 
-
-/**
- * Computes the checksum for a tar header and encode it on the header
- * @param entry: The tar header
- * @return the value of the checksum
- */
-unsigned int calculate_checksum(struct tar_t* entry){
-    // use spaces for the checksum bytes while calculating the checksum
-    memset(entry->chksum, ' ', 8);
-
-    // sum of entire metadata
-    unsigned int check = 0;
-    unsigned char* raw = (unsigned char*) entry;
-    for(int i = 0; i < 512  ; i++){
-        // printf(" rawi is : %ld \n",raw[i]);
-        check += raw[i];
-    }
-
-    snprintf(entry->chksum, sizeof(entry->chksum), "%06o0", check);
-
-    entry->chksum[6] = '\0';
-    entry->chksum[7] = ' ';
-    return check;
-}
-
-
-unsigned int oct2uint(char * oct, unsigned int size){
-    unsigned int out = 0;
-    int i = 0;
-    while ((i < size) && oct[i]){
-        out = (out << 3) | (unsigned int) (oct[i++] - '0');
-    }
-    return out;
-}
-
-
-char* random_string(int size){
-    /*
-     * creates a random string and returns the pointer
-     */
-    char all_char[] = "`1234567890-=¬!\"£$%^&*()_+¦qwertyuiop[]QWERTYUIOP{}asdfghjkl;'#ASDFGHJKL:@~\\zxcvbnm,./|ZXCVBNM<>?\n";
-    char *random_string = NULL;
-    if(size>0){
-        random_string = malloc(sizeof(char)*(size + 1));
-        if(random_string){
-            for(int i = 0 ; i < size; i++){
-                int random_letter = rand() % (int)(sizeof(all_char)-1);
-                random_string[i] = all_char[random_letter];
-            }
-            random_string[size] = '\0';
-        }
-    }
-    return random_string;
-
-}
-
-void create_archive_files(int modify_field, int modification_type,int no_files){//the field to modify and which type of modification
-
-    FILE *fptr;
-    fptr = fopen("success_archive1.tar","w");
-
-//    char name2[100] = "archive/file2";
-    for(int i = 0 ; i < no_files;i++){
-        struct tar_t *archive = calloc(1 , sizeof(struct tar_t));
-
-
-        snprintf(archive->name,sizeof(archive->name),"archive_2.sh");
-        snprintf(archive->mode,sizeof(archive->mode), "0%06o", 0000777 );
-        snprintf(archive->uid,sizeof(archive-> uid),"0%06o", 0001750);
-        snprintf(archive->gid,sizeof(archive->gid), "0%06o",0001750);
-        snprintf(archive->size,sizeof(archive->size), "%s","00000000554");
-        memcpy(archive->magic,TMAGIC,sizeof(archive->magic));
-
-        char version [2] = {'0','0'};
-        memcpy(archive->version,"00",sizeof(version));
-
-        calculate_checksum(archive);
-        //two blocks of 512 null bytes
-        fwrite(archive,512, 1, fptr);
-        char * content = (char * )malloc(sizeof(char) *12);
-        char mess[] = "bonjour\0";
-        memcpy(content,mess,sizeof(mess));
-        fwrite(content,1,12, fptr);
-        free(content);
-        // char  *nullblock = calloc(512,2);
-        // //        char *nullblock = malloc(512);
-        // //        memset(nullblock,' ',512);
-        // fwrite(nullblock,1024,1,fptr);
-        // free(nullblock);
-
-
-        //        free(name);
-        //        printf("%s",name);
-
-    }
-    if (modify_field == 0 && modification_type == 0){
-
-    }
-    fclose(fptr);
-    return;
-}
-void create_archive_files2(int modify_field, int modification_type,int no_files){
-       FILE *fptr;
-    fptr = fopen("success_archive2.tar","w");
-//    char name2[100] = "archive/file2";
-    for(int i = 0 ; i < no_files;i++){
-
-        struct tar_t *archive = malloc(sizeof(struct tar_t));
-//        struct tar_t *archive = malloc(512);
-//        memset(archive, ' ', 512);
-//        strcpy(archive->name, "archive/file");
-        // sprintf(archive->name,"file_%o.txt",i );
-        // memset(archive->name, ' ',100);
-        char name [100] = {'a','r','c','h','i','v','e','.','t','x','t'};
-        name[99] = '\0';
-        snprintf(archive->name,sizeof(archive->name),name);
-
-
-
-        snprintf(archive->mode,sizeof(archive->mode),"0%06o",0000777);
-
-        memset(archive->uid,' ',sizeof(archive->uid));
-        // snprintf(archive->uid,sizeof(archive->uid), "0%06o", 000000);
-        snprintf(archive->uid,sizeof(archive->uid),"%s","000000");
-
-        snprintf(archive->gid,sizeof(archive->gid), "0%06o", 0000000);
-
-
-        snprintf(archive->size,sizeof(archive->size), "%s","00000000066");
-
-
-
-        time_t now = time(NULL);
-        memset(archive->mtime, NULL, 12);
-        snprintf(archive->mtime,sizeof(archive->mtime),"%o",now);
-
-        archive->typeflag = '0';
-
-        memset(archive->magic, '\0', 8);
-        memcpy(archive->magic,TMAGIC,sizeof(archive->magic));
-
-        char version [2] = {'0','0'};
-        memcpy(archive->version,version,sizeof(archive->version));
-
-
-        memset(archive->uname, NULL,32);
-        snprintf(archive->uname,sizeof(archive->uname), "charles");
-
-        memset(archive->gname, NULL,32);
-        snprintf(archive->gname,sizeof(archive->gname), "charles");
-
-        memset(archive->devmajor, NULL ,8);
-        snprintf(archive->devmajor,sizeof(archive->devmajor), "0000000");
-
-        memset(archive->devminor, NULL ,8);
-        snprintf(archive->devminor,sizeof(archive->devminor), "0000000");
-
-//        fflush(stdout);
-        calculate_checksum(archive);
-    
-        //two blocks of 512 null bytes
-        fwrite(archive,512, 1, fptr);
-        char *random_input = random_string(512);
-        fwrite(random_input,512,1,fptr);
-        free(random_input);
-    //    char  *nullblock = calloc(512,2);
-       char *nullblock = malloc(512);
-    //    memset(nullblock,' \0',512);
-       fwrite(nullblock,1024,1,fptr);
-       free(nullblock);
-
-
-}}
-void create_archive_files3(int modify_field, int modification_type,int no_files){//the field to modify and which type of modification
-//    struct tar_t archive;
-//    char name[100]= "archive/file1";
-//    printf("%s\n",name);
-//    printf("%c\n", name[12]);
-    FILE *fptr;
-    fptr = fopen("success_archive3.tar","w");
-
-//    char name2[100] = "archive/file2";
-    for(int i = 0 ; i < no_files;i++){
-        struct tar_t *archive = calloc(1 , sizeof(struct tar_t));
-
-
-        snprintf(archive->name,sizeof(archive->name),"archive_2.sh.py");
-        snprintf(archive->mode,sizeof(archive->mode), "0%06o", 0000777 );
-        snprintf(archive->uid,sizeof(archive-> uid),"0%06o", 0001750);
-        snprintf(archive->gid,sizeof(archive->gid), "0%06o",0001750);
-        archive->typeflag = '1';
-        snprintf(archive->size,sizeof(archive->size), "%s","0000000554");
-        snprintf(archive->linkname,sizeof(archive->linkname), "%o",000000000);
-        memcpy(archive->magic,TMAGIC,sizeof(archive->magic));
-        memcpy(archive->version,"00",sizeof(archive->version));
-
-        calculate_checksum(archive);
-        //two blocks of 512 null bytes
-        fwrite(archive,512, 1, fptr);
-        char * content = (char * )malloc(sizeof(char) *12);
-        char mess[] = "exit\0";
-        memcpy(content,mess,sizeof(mess));
-        fwrite(content,1,12, fptr);
-        fwrite(content,1,12, fptr);
-        free(content);
-        char  *nullblock = calloc(512,2);
-        fwrite(nullblock,1024,1,fptr);
-        free(nullblock);
-
-    }
-    if (modify_field == 0 && modification_type == 0){
-
-    }
-    fclose(fptr);
-    return;
-}
-void create_archive_files4(int modify_field, int modification_type,int no_files){//the field to modify and which type of modification
-
-    FILE *fptr;
-    fptr = fopen("success_archive4.tar","w");
-
-    for(int i = 0 ; i < 10;i++){
-        struct tar_t *archive = calloc(1 , sizeof(struct tar_t));
-
-        snprintf(archive->name,sizeof(archive->name),"hey_%d.txt\x00", i );
-        snprintf(archive->mode,sizeof(archive->mode), "0%06o", 0000777 );
-        snprintf(archive->uid,sizeof(archive-> uid),"0%06o", 0001750);
-        snprintf(archive->gid,sizeof(archive->gid), "0%06o",0001750);
-        archive->typeflag = '0';
-        snprintf(archive->size,sizeof(archive->size), "%s","0000000554");
-        memcpy(archive->magic,TMAGIC,sizeof(archive->magic));
-        memcpy(archive->version,"00",sizeof(archive->version));
-
-        calculate_checksum(archive);
-        //two blocks of 512 null bytes
-        fwrite(archive,512, 1, fptr);
-        char* mess = random_string(512);
-        fwrite(mess,1,512, fptr);
-        free(mess);
-
-    }
-    char  *nullblock = calloc(512,2);
-    fwrite(nullblock,1024,1,fptr);
-    free(nullblock);
-
-
-    if (modify_field == 0 && modification_type == 0){
-
-    }
-    fclose(fptr);
-    return;
-}
-int run_extractor(int argc, char* argv[],int i){
-    if (argc < 2)
-        return -1;
+//EXTRACTOR FUNCTION...
+int run_extractor(char* error){
     int rv = 0;
-    char cmd[51];
-    strncpy(cmd, argv[1], 25);
-    cmd[26] = '\0';
-    char arch[26] ;
-    sprintf(arch," success_archive%d.tar",i);
-
-    strncat(cmd, arch, 25); //path of executable
-
-    char buf[33];
+    char cmd[250];
+    sprintf(cmd, "%s %s 2>&1", extractor, "archive.tar");
+    char buf[250];
     FILE *fp;
-    printf(cmd);
-    printf("\n");
+    // printf(cmd);
+    // printf("\n");
 
     if ((fp = popen(cmd, "r")) == NULL) {
         printf("Error opening pipe!\n");
         return -1;
     }
-
-    if(fgets(buf, 33, fp) == NULL) {
-        printf("No output\n");
+    if(fgets(buf, 250, fp) == NULL) {
+        // printf("No output\n");
         goto finally;
     }
     if(strncmp(buf, "*** The program has crashed ***\n", 33)) {
@@ -315,7 +60,11 @@ int run_extractor(int argc, char* argv[],int i){
         printf("Not the crash message\n");
         goto finally;
     } else {
-        printf("Crash message\n");
+        printf("Crash message %s\n",error);
+        correct +=1;
+        char new_name[100];
+        sprintf(new_name,"success_%s.tar",error);
+        rename("archive.tar", new_name);
         rv = 1;
         goto finally;
     }
@@ -327,47 +76,227 @@ int run_extractor(int argc, char* argv[],int i){
     return rv;
 }
 
-int fuzzer(int argc, char argv[]){
-    int total_bugs = 0;
-    for(int i = 1 ; i < 5; i++){
 
-        int extractor_val = run_extractor(argc, argv,i);
-        if (extractor_val > 0){
-            total_bugs += 1;
-        }
-        if(extractor_val == -1){
-            printf("error in the executable\n");
-            return 0;
-        }
-    }
-    return 1;
+unsigned int calculate_checksum(struct tar_t* entry){
+       // use spaces for the checksum bytes while calculating the checksum
+   memset(entry->chksum, ' ', 8);
+
+   // sum of entire metadata
+   unsigned int check = 0;
+   unsigned char* raw = (unsigned char*) entry;
+   for(int i = 0; i < 512; i++){
+       check += raw[i];
+   }
+
+   snprintf(entry->chksum, sizeof(entry->chksum), "%06o0", check);
+
+   entry->chksum[6] = '\0';
+   entry->chksum[7] = ' ';
+   return check;
 }
+
+
+
+void write_archive_file(struct tar_t * archive,char * buff){
+    FILE *fptr;
+    fptr = fopen("archive.tar","w");
+    calculate_checksum(archive);
+        //two blocks of 512 null bytes
+        fwrite(archive,512, 1, fptr);
+        char * content = (char * )malloc(sizeof(char) *12);
+        char mess[] = "bonjour\0";
+        memcpy(content,mess,sizeof(mess));
+        fwrite(content,1,12, fptr);
+        free(content);
+        char  *nullblock = calloc(512,2);
+        fwrite(nullblock,1024,1,fptr);
+        free(nullblock);
+    
+    
+    fclose(fptr);
+}
+
+void create_archive_files(struct tar_t* archive,size_t size){//the field to modify and which type of modification
+
+        snprintf(archive->name,sizeof(archive->name),"archive.sh");
+        snprintf(archive->mode,sizeof(archive->mode), "0%06o", 0000777 );
+        snprintf(archive->uid,sizeof(archive-> uid),"0%06o", 0001750);
+        snprintf(archive->gid,sizeof(archive->gid), "0%06o",0001750);
+        snprintf(archive->size,sizeof(archive->size), "%0*lo",11,size);
+        memcpy(archive->magic,TMAGIC,sizeof(archive->magic));
+        char version [2] = {'0','0'};
+        memcpy(archive->version,"00",sizeof(version));
+        
+
+}
+ char* modify(int size){
+        char * modify = (char * )malloc(size);
+        for (int i = 0; i<size; i++){
+            modify[i] = (char)(128+ rand()%128);
+        }
+        return modify;
+}
+
+// DIFFERENT SETS OF TESTS ON HEADER FIELDS
+void tests(struct tar_t * archive,char * header,char*header_name){
+    char error[100];
+    // TEST1 : STRING
+    strncpy(header,"aaaaaaa",sizeof(header));
+    write_archive_file(archive,"bonjour\0");
+    sprintf(error, "%s_string",header_name);
+    run_extractor(error);
+
+    //TEST2: NON ASCII
+    char * field = (char *) modify(sizeof(header));
+    snprintf(header,sizeof(header),field);
+    write_archive_file(archive,"bonjour\0");
+    sprintf(error, "%s_noascii",header_name);
+    run_extractor(error);
+
+    //TEST3:EMPTY
+    snprintf(header,sizeof(header),"");
+    write_archive_file(archive,"bonjour\0");
+    sprintf(error, "%s_empty",header_name);
+    run_extractor(error);
+
+    //TEST4:HALF NULL
+    memset(header, 0, sizeof(header) / 2);
+    memset(header, '0', sizeof(header) / 2);
+    sprintf(error, "%s_half_zero",header_name);
+    run_extractor(error);
+
+}
+
+
+//NO NULL BLOCKS
+void no_null(){
+    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+    snprintf(archive->name,sizeof(archive->name),"archive_2.sh");
+    snprintf(archive->mode,sizeof(archive->mode), "0%06o", 0000777 );
+    snprintf(archive->uid,sizeof(archive-> uid),"0001750");
+    snprintf(archive->gid,sizeof(archive->gid), "0001750");
+    snprintf(archive->size,sizeof(archive->size), "%0*o",11,256);
+    memcpy(archive->magic,TMAGIC,sizeof(archive->magic));
+    char version [2] = {'0','0'};
+    memcpy(archive->version,"00",sizeof(version));
+    FILE *fptr;
+    fptr = fopen("archive.tar","w");
+    calculate_checksum(archive);
+    //two blocks of 512 null bytes
+    fwrite(archive,512, 1, fptr);
+    char * content = (char * )malloc(sizeof(char) *12);
+    char mess[] = "bonjour\0";
+    memcpy(content,mess,sizeof(mess));
+    fwrite(content,1,12, fptr);
+    free(content);
+    fclose(fptr);
+    run_extractor("no_nullblocks");
+
+        
+}
+
+
+// TESTING MODE
+void mode(){
+    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+    create_archive_files(archive,512);
+    tests(archive,archive->mode,"mode");
+}
+
+
+//TESTING ON UID 
+void uid(){
+    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+    create_archive_files(archive,512);
+    tests(archive,archive->uid,"uid");
+    
+}
+
+
+// TESTING GID
+void gid(){
+    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+    create_archive_files(archive,512);
+    tests(archive,archive->gid,"gid");
+}
+
+// TESTING ON THE DIFFERENT SIZE 
+void size(){
+    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+    // create_archive_files(archive,512);
+    // tests(archive,archive->size);
+    create_archive_files(archive,0);
+    write_archive_file(archive,"bonjour\0");
+    run_extractor("null_size");
+    create_archive_files(archive,1);
+    write_archive_file(archive,"bonjour\0");
+    run_extractor("1_size");
+    create_archive_files(archive,600);
+    write_archive_file(archive,"bonjour\0");
+    run_extractor("600_size");
+    create_archive_files(archive,2048);
+    write_archive_file(archive,"bonjour\0");
+    run_extractor("2048_size");
+}
+
+// TESTING MTIME VERS
+void mtime(){
+    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+    create_archive_files(archive,512);
+    tests(archive,archive->mtime,"mtime");
+}
+
+//TESTING ON TYPEFLAG
+void typeflag()
+{
+    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+    create_archive_files(archive,512);
+     char error[30];
+    for (int i = 0; i < 0x100; i++)
+    {
+        sprintf(error, "typeflag_0x%02x", i);
+        archive->typeflag = (char)i;
+        write_archive_file(archive,"bonjour\0");
+        run_extractor(error);
+    }
+}
+
+// TESTING MAGIC
+void magic(){
+    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+    create_archive_files(archive,512);
+    tests(archive,archive->magic,"magic");
+}
+
+// TESTING UNAME
+void uname(){
+    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+    create_archive_files(archive,512);
+    tests(archive,archive->uname,"uname");
+}
+
+// TESTING GNAME
+void gname(){
+    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+    create_archive_files(archive,512);
+    tests(archive,archive->gname,"gname");
+}
+
+
 
 int main(int argc, char* argv[]){
-//    printf(argv[1]);
-    create_archive_files(0,0,1);
-    create_archive_files2(0,0,1);
-    create_archive_files3(0,0,1);
-    create_archive_files4(0,0,1);
-
-    // int run = run_extractor(argc, argv);
-//    FILE *fptr;
-//    fptr = fopen("archive.tar","w");
-    int run_fuzzer = fuzzer(argc, argv);
-//    fclose(fptr);
-    if(!run_fuzzer){
-        printf("error");
-        return 0;
-    }
-
-    // printf("extractor val : %d", run);
+    strcpy(extractor, argv[1]);
+    no_null();
+    uid();
+    gid();
+    size();
+    mtime();
+    typeflag();
+    magic();
+    uname();
+    gname();
     return 0;
 }
-
-
-//char data_types = {"ascii", b};
-//int create_data(){}
-
 
 
 
