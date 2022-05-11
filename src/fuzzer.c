@@ -182,6 +182,7 @@ void create_archive_files(struct tar_t* archive,size_t size){//the field to modi
 // DIFFERENT SETS OF TESTS ON HEADER FIELDS
 void tests(struct tar_t * archive,char * header,char*header_name,size_t size){
     char error[100];
+
     // TEST1 : STRING
     strncpy(header,"aaaaaaa",size);
     write_archive_file(archive,"bonjour\0");
@@ -203,22 +204,27 @@ void tests(struct tar_t * archive,char * header,char*header_name,size_t size){
     
   
 
-        //TEST5: NOT NULL TERMINATED
+    //TEST5: NOT NULL TERMINATED
     memset(header,0,sizeof(header));
     memset(header, '4',size);
+    write_archive_file(archive,"bonjour\0");
     sprintf(error, "%s_not_null_temrinated",header_name);
     run_extractor(error);
     
     //TEST4:HALF NULL
     memset(header, 0, size / 2);
     memset(header, '0', size / 2);
+    write_archive_file(archive,"bonjour\0");
     sprintf(error, "%s_half_zero",header_name);
     run_extractor(error);
+
     
-   
-
-
-
+    memset(header, 0, size);
+    memset(header, '4', size / 2);
+    write_archive_file(archive,"bonjour\0");
+    sprintf(error, "%s_half",header_name);
+    run_extractor(error);
+    
 }
 
 
@@ -277,8 +283,9 @@ void gid(){
 // TESTING ON THE DIFFERENT SIZE 
 void size(){
     struct tar_t* archive =  calloc(1, sizeof(struct tar_t));
-    // create_archive_files(archive,512);
-    // tests(archive,archive->size);
+
+    create_archive_files(archive,512);
+    tests(archive,archive->size,"size",sizeof(archive->size));
     create_archive_files(archive,0);
     write_archive_file(archive,"bonjour\0");
     run_extractor("null_size");
@@ -407,6 +414,7 @@ void end_of_archive(int i){
 int main(int argc, char* argv[]){
     strcpy(extractor, argv[1]);
     no_null();
+    mode();
     uid();
     gid();
     size();
