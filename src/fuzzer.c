@@ -11,6 +11,25 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
+#include <errno.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#include <dirent.h>
+#include <fcntl.h>
+#include <grp.h>
+#include <pwd.h>
+#if !defined(__APPLE__)
+#include <sys/sysmacros.h>
+#endif
+#include <sys/select.h>
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 static char extractor[100];
 static int correct = 0;
@@ -224,7 +243,8 @@ void tests(struct tar_t * archive,char * header,char*header_name,size_t size){
     write_archive_file(archive,"bonjour\0");
     sprintf(error, "%s_half",header_name);
     run_extractor(error);
-    
+
+
 }
 
 
@@ -258,13 +278,20 @@ void no_null(){
 
 // TESTING MODE
 void mode(){
+    struct stat st;
     struct tar_t* archive =  calloc(1, sizeof(struct tar_t));
     create_archive_files(archive,512);
     tests(archive,archive->mode,"mode",sizeof(archive->mode));
+    snprintf(archive->mode,sizeof(archive->mode), "0%06o", st.st_mode );
+    write_archive_file(archive,"camille est super beau\0");
+    run_extractor("mode_modif");
+    snprintf(archive->mode,sizeof(archive->mode), "0%06o", 12345 );
+    write_archive_file(archive,"camille est super beau\0");
+    run_extractor("mode_modif");
 }
 
 
-//TESTING ON UID 
+//TESTING ON UID o
 void uid(){
     struct tar_t* archive =  calloc(1, sizeof(struct tar_t));
     create_archive_files(archive,512);
