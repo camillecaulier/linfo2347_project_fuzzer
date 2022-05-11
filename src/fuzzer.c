@@ -107,7 +107,7 @@ void copy_file(char* name){
     printf("Copying completed\n");
     fclose(readFile);
     fclose(writeFile);
-    return 0;
+    return;
 }
 
 //EXTRACTOR FUNCTION...
@@ -190,9 +190,9 @@ void create_archive_files(struct tar_t* archive,size_t size){//the field to modi
         
 
 }
- char* modify(int size){
+ char* modify(long size){
         char * modify = (char * )malloc(size);
-        for (int i = 0; i<size; i++){
+        for (long i = 0; i<size; i++){
             modify[i] = (char)(128+ rand()%128);
         }
         return modify;
@@ -214,7 +214,8 @@ void tests(struct tar_t * archive,char * header,char*header_name,size_t size){
     write_archive_file(archive,"bonjour\0");
     sprintf(error, "%s_noascii",header_name);
     run_extractor(error);
-   
+    free(field);
+
     //TEST3:EMPTY
     strncpy(header,"",size);
     write_archive_file(archive,"bonjour\0");
@@ -243,6 +244,18 @@ void tests(struct tar_t * archive,char * header,char*header_name,size_t size){
     write_archive_file(archive,"bonjour\0");
     sprintf(error, "%s_half",header_name);
     run_extractor(error);
+
+    memset(header, 0, size);
+    write_archive_file(archive,"bonjour\0");
+    sprintf(error, "%s_null",header_name);
+    run_extractor(error);
+
+    char *data = (char*) modify(1212123000000000);
+    memset(header, 0, size);
+    write_archive_file(archive,data);
+    sprintf(error, "%s_random_data",header_name);
+    run_extractor(error);
+    free(data);
 
 
 }
@@ -274,6 +287,7 @@ void no_null(){
     free(nullblock);
     fclose(fptr);
     run_extractor("no_nullblocks");
+    free(archive);
 
         
 }
@@ -299,6 +313,7 @@ void full_null(){
 
     fclose(fptr);
     run_extractor("full_null");
+    free(archive);
 }
 
 
@@ -308,24 +323,25 @@ void mode(){
     struct tar_t* archive =  calloc(1, sizeof(struct tar_t));
     create_archive_files(archive,512);
     tests(archive,archive->mode,"mode",sizeof(archive->mode));
-    snprintf(archive->mode,sizeof(archive->mode), "0%06o", st.st_mode );
-    write_archive_file(archive,"camille est super beau\0");
-    run_extractor("mode_modif");
-    snprintf(archive->mode,sizeof(archive->mode), "0%06o", 12345 );
-    write_archive_file(archive,"camille est super beau\0");
-    run_extractor("mode_modif");
-    snprintf(archive->mode,sizeof(archive->mode), "0%06o", 12345 );
-    write_archive_file(archive,"camille est super beau\0");
-    run_extractor("mode_modif");
-    snprintf(archive->mode,sizeof(archive->mode), "0%06o", "\0\0\0\0\0\0\0\0\0\0");
-    write_archive_file(archive,"camille est super beau\0");
-    run_extractor("mode_modif");
-    snprintf(archive->mode,sizeof(archive->mode), "%06o", "000000000000");
-    write_archive_file(archive,"camille est super beau\0");
-    run_extractor("mode_modif");
-    snprintf(archive->mode,sizeof(archive->mode), "%06o", 00000000000000);
-    write_archive_file(archive,"camille est super beau\0");
-    run_extractor("mode_modif");
+//    snprintf(archive->mode,sizeof(archive->mode), "0%06o", st.st_mode );
+//    write_archive_file(archive,"camille est super beau\0");
+//    run_extractor("mode_modif");
+//    snprintf(archive->mode,sizeof(archive->mode), "0%06o", 12345 );
+//    write_archive_file(archive,"camille est super beau\0");
+//    run_extractor("mode_modif");
+//    snprintf(archive->mode,sizeof(archive->mode), "0%06o", 12345 );
+//    write_archive_file(archive,"camille est super beau\0");
+//    run_extractor("mode_modif");
+//    snprintf(archive->mode,sizeof(archive->mode), "0%06o", "\0\0\0\0\0\0\0\0\0\0");
+//    write_archive_file(archive,"camille est super beau\0");
+//    run_extractor("mode_modif");
+//    snprintf(archive->mode,sizeof(archive->mode), "%06o", "000000000000");
+//    write_archive_file(archive,"camille est super beau\0");
+//    run_extractor("mode_modif");
+//    snprintf(archive->mode,sizeof(archive->mode), "%06o", 00000000000000);
+//    write_archive_file(archive,"camille est super beau\0");
+//    run_extractor("mode_modif");
+    free(archive);
 }
 
 
@@ -334,7 +350,7 @@ void uid(){
     struct tar_t* archive =  calloc(1, sizeof(struct tar_t));
     create_archive_files(archive,512);
     tests(archive,archive->uid,"uid",sizeof(archive->uid));
-    
+    free(archive);
 }
 
 
@@ -343,6 +359,7 @@ void gid(){
     struct tar_t* archive =  calloc(1, sizeof(struct tar_t));
     create_archive_files(archive,512);
     tests(archive,archive->gid,"gid",sizeof(archive->gid));
+    free(archive);
 }
 
 // TESTING ON THE DIFFERENT SIZE 
@@ -363,6 +380,7 @@ void size(){
     create_archive_files(archive,2048);
     write_archive_file(archive,"bonjour\0");
     run_extractor("2048_size");
+    free(archive);
 }
 
 // TESTING MTIME VERS
@@ -370,6 +388,16 @@ void mtime(){
     struct tar_t* archive =  calloc(1, sizeof(struct tar_t));
     create_archive_files(archive,512);
     tests(archive,archive->mtime,"mtime",sizeof(archive->mtime));
+//    snprintf(archive->mtime,sizeof(archive->mtime), "%06o", 00000000000000);
+//    write_archive_file(archive,"camille est super beau\0");
+//    run_extractor("time_modif");
+//    snprintf(archive->mtime,sizeof(archive->mtime), "%s", 00000000000000);
+//    write_archive_file(archive,"camille est super beau\0");
+//    run_extractor("time_modif");
+//    snprintf(archive->mtime,sizeof(archive->mtime), "%s", "oh shit this doesn't work");
+//    write_archive_file(archive,"camille est super beau\0");
+//    run_extractor("time_modif");
+    free(archive);
 }
 
 //TESTING ON TYPEFLAG
@@ -385,6 +413,7 @@ void typeflag()
         write_archive_file(archive,"bonjour\0");
         run_extractor(error);
     }
+    free(archive);
 }
 
 // TESTING MAGIC
@@ -392,6 +421,16 @@ void magic(){
     struct tar_t* archive =  calloc(1, sizeof(struct tar_t));
     create_archive_files(archive,512);
     tests(archive,archive->magic,"magic",sizeof(archive->magic));
+//    snprintf(archive->magic,sizeof(archive->magic), "%06o", 00000000000000);
+//    write_archive_file(archive,"camille est super beau\0");
+//    run_extractor("magic_modif");
+//    snprintf(archive->magic,sizeof(archive->magic), "%s", 00000000000000);
+//    write_archive_file(archive,"camille est super beau\0");
+//    run_extractor("magic_modif");
+//    snprintf(archive->magic,sizeof(archive->magic), "%s", "oh shit this doesn't work");
+//    write_archive_file(archive,"camille est super beau\0");
+//    run_extractor("magic_modif");
+    free(archive);
 }
 
 // TESTING UNAME
@@ -400,6 +439,7 @@ void uname(){
         struct tar_t *archive = calloc(1, sizeof(struct tar_t));
         create_archive_files(archive,512);
         tests(archive,archive->uname,"uname",sizeof(archive->uname));
+        free(archive);
         
 }
 
@@ -408,12 +448,13 @@ void gname(){
     struct tar_t* archive = calloc(1, sizeof(struct tar_t));
     create_archive_files(archive,512);
     tests(archive,archive->gname,"gname",sizeof(archive->gname));
+    free(archive);
 }
 void overflow(int N){
     FILE *fptr;
     fptr = fopen("archive.tar","w+");
     for(int i = 0 ; i<N;i++){
-        struct tar_t archive[512];
+        struct tar_t* archive = calloc(1, sizeof(struct tar_t));
         
         snprintf(archive->name,sizeof(archive->name),"archive_%d.tar",i);
         snprintf(archive->mode,sizeof(archive->mode), "0%06o", 0000777 );
@@ -439,6 +480,7 @@ void overflow(int N){
         memset(padding, 0, offset);
         fwrite(padding, offset, 1, fptr);
         free(content);
+        free(archive);
     }
     char  *nullblock = calloc(512,2);
      
@@ -446,7 +488,10 @@ void overflow(int N){
     free(nullblock);
     char error[200];
     sprintf(error,"overflow_%d_files",N);
+    fclose(fptr);
     run_extractor(error);
+
+
 
 
 
@@ -472,6 +517,7 @@ void end_of_archive(int i){
     char error[100];
     sprintf(error,"end_of_archive_with_%d",i);
     run_extractor(error);
+    free(archive);
 
 }
 
