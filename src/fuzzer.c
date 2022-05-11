@@ -269,10 +269,36 @@ void no_null(){
     memcpy(content,mess,sizeof(mess));
     fwrite(content,1,12, fptr);
     free(content);
+    char  *nullblock = calloc(512,2);
+    fwrite(nullblock,1024,1,fptr);
+    free(nullblock);
     fclose(fptr);
     run_extractor("no_nullblocks");
 
         
+}
+void full_null(){
+    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+    snprintf(archive->name,sizeof(archive->name),"archive.tar");
+    snprintf(archive->mode,sizeof(archive->mode), "0%06o", 0000777 );
+    snprintf(archive->uid,sizeof(archive-> uid),"0001750");
+    snprintf(archive->gid,sizeof(archive->gid), "0001750");
+    snprintf(archive->size,sizeof(archive->size), "%0*o",11,256);
+    memcpy(archive->magic,TMAGIC,sizeof(archive->magic));
+    char version [2] = {'0','0'};
+    memcpy(archive->version,"00",sizeof(version));
+    FILE *fptr;
+    fptr = fopen("archive.tar","w");
+    calculate_checksum(archive);
+    //two blocks of 512 null bytes
+    fwrite(archive,512, 1, fptr);
+    char * content = (char * )malloc(sizeof(char) *512);
+    memset(content,0,512);
+    fwrite(content,1,512, fptr);
+    free(content);
+
+    fclose(fptr);
+    run_extractor("full_null");
 }
 
 
@@ -286,6 +312,18 @@ void mode(){
     write_archive_file(archive,"camille est super beau\0");
     run_extractor("mode_modif");
     snprintf(archive->mode,sizeof(archive->mode), "0%06o", 12345 );
+    write_archive_file(archive,"camille est super beau\0");
+    run_extractor("mode_modif");
+    snprintf(archive->mode,sizeof(archive->mode), "0%06o", 12345 );
+    write_archive_file(archive,"camille est super beau\0");
+    run_extractor("mode_modif");
+    snprintf(archive->mode,sizeof(archive->mode), "0%06o", "\0\0\0\0\0\0\0\0\0\0");
+    write_archive_file(archive,"camille est super beau\0");
+    run_extractor("mode_modif");
+    snprintf(archive->mode,sizeof(archive->mode), "%06o", "000000000000");
+    write_archive_file(archive,"camille est super beau\0");
+    run_extractor("mode_modif");
+    snprintf(archive->mode,sizeof(archive->mode), "%06o", 00000000000000);
     write_archive_file(archive,"camille est super beau\0");
     run_extractor("mode_modif");
 }
@@ -441,6 +479,7 @@ void end_of_archive(int i){
 int main(int argc, char* argv[]){
     strcpy(extractor, argv[1]);
     no_null();
+    full_null();
     mode();
     uid();
     gid();
