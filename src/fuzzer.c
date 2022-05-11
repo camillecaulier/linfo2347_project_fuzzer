@@ -35,7 +35,61 @@ struct tar_t {                              /* byte offset */
     char padding[12];             /* 500 */
 };
 
+
 #define TMAGIC   "ustar\x00" 
+
+unsigned int calculate_checksum(struct tar_t* entry){
+       // use spaces for the checksum bytes while calculating the checksum
+   memset(entry->chksum, ' ', 8);
+
+   // sum of entire metadata
+   unsigned int check = 0;
+   unsigned char* raw = (unsigned char*) entry;
+   for(int i = 0; i < 512; i++){
+       check += raw[i];
+   }
+
+   snprintf(entry->chksum, sizeof(entry->chksum), "%06o0", check);
+
+   entry->chksum[6] = '\0';
+   entry->chksum[7] = ' ';
+   return check;
+}
+
+void copy_file(char* name){
+    FILE *readFile, *writeFile;
+    char readFilePath[100] = "archive.tar";
+    char writeFilePath[100] ;
+    strcpy(writeFilePath, name);
+    char buffer;
+
+    readFile = fopen(readFilePath, "r");
+
+    if (readFile == NULL)
+    {
+        printf("File opening failed for %s", readFilePath);
+        exit(0);
+    }
+
+    writeFile = fopen(writeFilePath, "w");
+    if (writeFile == NULL)
+    {
+        printf("File opening failed for %s", writeFilePath);
+        exit(0);
+    }
+
+    buffer = fgetc(readFile);
+    while (buffer != EOF)
+    {
+        fputc(buffer, writeFile);
+        buffer = fgetc(readFile);
+    }
+
+    printf("Copying completed\n");
+    fclose(readFile);
+    fclose(writeFile);
+    return 0;
+}
 
 //EXTRACTOR FUNCTION...
 int run_extractor(char* error){
@@ -57,14 +111,15 @@ int run_extractor(char* error){
     }
     if(strncmp(buf, "*** The program has crashed ***\n", 33)) {
         printf(buf);
-        printf("Not the crash message\n");
+        // printf("Not the crash message\n");
         goto finally;
     } else {
         printf("Crash message %s\n",error);
         correct +=1;
+
         char new_name[100];
         sprintf(new_name,"success_%s.tar",error);
-        rename("archive.tar", new_name);
+        copy_file(new_name);
         rv = 1;
         goto finally;
     }
@@ -77,23 +132,7 @@ int run_extractor(char* error){
 }
 
 
-unsigned int calculate_checksum(struct tar_t* entry){
-       // use spaces for the checksum bytes while calculating the checksum
-   memset(entry->chksum, ' ', 8);
 
-   // sum of entire metadata
-   unsigned int check = 0;
-   unsigned char* raw = (unsigned char*) entry;
-   for(int i = 0; i < 512; i++){
-       check += raw[i];
-   }
-
-   snprintf(entry->chksum, sizeof(entry->chksum), "%06o0", check);
-
-   entry->chksum[6] = '\0';
-   entry->chksum[7] = ' ';
-   return check;
-}
 
 
 
@@ -118,12 +157,15 @@ void write_archive_file(struct tar_t * archive,char * buff){
 
 void create_archive_files(struct tar_t* archive,size_t size){//the field to modify and which type of modification
 
-        snprintf(archive->name,sizeof(archive->name),"archive.sh");
+        snprintf(archive->name,sizeof(archive->name),"archive.tar");
         snprintf(archive->mode,sizeof(archive->mode), "0%06o", 0000777 );
         snprintf(archive->uid,sizeof(archive-> uid),"0%06o", 0001750);
         snprintf(archive->gid,sizeof(archive->gid), "0%06o",0001750);
         snprintf(archive->size,sizeof(archive->size), "%0*lo",11,size);
         memcpy(archive->magic,TMAGIC,sizeof(archive->magic));
+        snprintf(archive->linkname,sizeof(archive->linkname),"archive.tar");
+        snprintf(archive->uname,sizeof(archive->uname), "user");
+        snprintf(archive->gname,sizeof(archive->gname), "user");
         char version [2] = {'0','0'};
         memcpy(archive->version,"00",sizeof(version));
         
@@ -138,32 +180,44 @@ void create_archive_files(struct tar_t* archive,size_t size){//the field to modi
 }
 
 // DIFFERENT SETS OF TESTS ON HEADER FIELDS
-void tests(struct tar_t * archive,char * header,char*header_name){
+void tests(struct tar_t * archive,char * header,char*header_name,size_t size){
     char error[100];
     // TEST1 : STRING
-    strncpy(header,"aaaaaaa",sizeof(header));
+    strncpy(header,"aaaaaaa",size);
     write_archive_file(archive,"bonjour\0");
     sprintf(error, "%s_string",header_name);
     run_extractor(error);
 
     //TEST2: NON ASCII
-    char * field = (char *) modify(sizeof(header));
-    snprintf(header,sizeof(header),field);
+    char * field = (char *) modify(size);
+    strncpy(header,field,size);
     write_archive_file(archive,"bonjour\0");
     sprintf(error, "%s_noascii",header_name);
     run_extractor(error);
-
+   
     //TEST3:EMPTY
-    snprintf(header,sizeof(header),"");
+    strncpy(header,"",size);
     write_archive_file(archive,"bonjour\0");
     sprintf(error, "%s_empty",header_name);
     run_extractor(error);
+    
+  
 
+        //TEST5: NOT NULL TERMINATED
+    memset(header,0,sizeof(header));
+    memset(header, '4',size);
+    sprintf(error, "%s_not_null_temrinated",header_name);
+    run_extractor(error);
+    
     //TEST4:HALF NULL
-    memset(header, 0, sizeof(header) / 2);
-    memset(header, '0', sizeof(header) / 2);
+    memset(header, 0, size / 2);
+    memset(header, '0', size / 2);
     sprintf(error, "%s_half_zero",header_name);
     run_extractor(error);
+    
+   
+
+
 
 }
 
@@ -171,7 +225,7 @@ void tests(struct tar_t * archive,char * header,char*header_name){
 //NO NULL BLOCKS
 void no_null(){
     struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
-    snprintf(archive->name,sizeof(archive->name),"archive_2.sh");
+    snprintf(archive->name,sizeof(archive->name),"archive.tar");
     snprintf(archive->mode,sizeof(archive->mode), "0%06o", 0000777 );
     snprintf(archive->uid,sizeof(archive-> uid),"0001750");
     snprintf(archive->gid,sizeof(archive->gid), "0001750");
@@ -198,31 +252,31 @@ void no_null(){
 
 // TESTING MODE
 void mode(){
-    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+    struct tar_t* archive =  calloc(1, sizeof(struct tar_t));
     create_archive_files(archive,512);
-    tests(archive,archive->mode,"mode");
+    tests(archive,archive->mode,"mode",sizeof(archive->mode));
 }
 
 
 //TESTING ON UID 
 void uid(){
-    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+    struct tar_t* archive =  calloc(1, sizeof(struct tar_t));
     create_archive_files(archive,512);
-    tests(archive,archive->uid,"uid");
+    tests(archive,archive->uid,"uid",sizeof(archive->uid));
     
 }
 
 
 // TESTING GID
 void gid(){
-    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+    struct tar_t* archive =  calloc(1, sizeof(struct tar_t));
     create_archive_files(archive,512);
-    tests(archive,archive->gid,"gid");
+    tests(archive,archive->gid,"gid",sizeof(archive->gid));
 }
 
 // TESTING ON THE DIFFERENT SIZE 
 void size(){
-    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+    struct tar_t* archive =  calloc(1, sizeof(struct tar_t));
     // create_archive_files(archive,512);
     // tests(archive,archive->size);
     create_archive_files(archive,0);
@@ -241,15 +295,15 @@ void size(){
 
 // TESTING MTIME VERS
 void mtime(){
-    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+    struct tar_t* archive =  calloc(1, sizeof(struct tar_t));
     create_archive_files(archive,512);
-    tests(archive,archive->mtime,"mtime");
+    tests(archive,archive->mtime,"mtime",sizeof(archive->mtime));
 }
 
 //TESTING ON TYPEFLAG
 void typeflag()
 {
-    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+    struct tar_t* archive =  calloc(1, sizeof(struct tar_t));
     create_archive_files(archive,512);
      char error[30];
     for (int i = 0; i < 0x100; i++)
@@ -263,25 +317,91 @@ void typeflag()
 
 // TESTING MAGIC
 void magic(){
-    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+    struct tar_t* archive =  calloc(1, sizeof(struct tar_t));
     create_archive_files(archive,512);
-    tests(archive,archive->magic,"magic");
+    tests(archive,archive->magic,"magic",sizeof(archive->magic));
 }
 
 // TESTING UNAME
 void uname(){
-    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
-    create_archive_files(archive,512);
-    tests(archive,archive->uname,"uname");
+
+        struct tar_t *archive = calloc(1, sizeof(struct tar_t));
+        create_archive_files(archive,512);
+        tests(archive,archive->uname,"uname",sizeof(archive->uname));
+        
 }
 
 // TESTING GNAME
 void gname(){
-    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+    struct tar_t* archive = calloc(1, sizeof(struct tar_t));
     create_archive_files(archive,512);
-    tests(archive,archive->gname,"gname");
+    tests(archive,archive->gname,"gname",sizeof(archive->gname));
 }
+void overflow(int N){
+    FILE *fptr;
+    fptr = fopen("archive.tar","w+");
+    for(int i = 0 ; i<N;i++){
+        struct tar_t archive[512];
+        
+        snprintf(archive->name,sizeof(archive->name),"archive_%d.tar",i);
+        snprintf(archive->mode,sizeof(archive->mode), "0%06o", 0000777 );
+        snprintf(archive->uid,sizeof(archive-> uid),"0001750");
+        snprintf(archive->gid,sizeof(archive->gid), "0001750");
+        snprintf(archive->size,sizeof(archive->size), "%0*o",11,256);
+        memcpy(archive->magic,TMAGIC,sizeof(archive->magic));
+        char version [2] = {'0','0'};
+        memcpy(archive->version,"00",sizeof(version));
+        
+        //two blocks of 512 null bytes
+        
+        char * content = (char * )malloc(sizeof(char) *12);
+        char mess[] = "bonjour\0";
+        sprintf(content,"%s_%d",mess,i);
+        snprintf(archive->size,sizeof(archive->size), "%0*o",11,strlen(content));
+        calculate_checksum(archive);
+        fwrite(archive,sizeof(struct tar_t), 1, fptr);
+        //PADDING
+        fwrite(content,1,strlen(content), fptr);
+        size_t offset = 512 - (strlen(content) % 512);
+        char padding[offset];
+        memset(padding, 0, offset);
+        fwrite(padding, offset, 1, fptr);
+        free(content);
+    }
+    char  *nullblock = calloc(512,2);
+     
+    fwrite(nullblock,1024,1,fptr);
+    free(nullblock);
+    char error[200];
+    sprintf(error,"overflow_%d_files",N);
+    run_extractor(error);
 
+
+
+}
+void empty(){
+      FILE *fptr = fopen("archive.tar", "w");
+  if (fptr)
+  {
+    fclose(fptr);
+    
+    run_extractor("empty_tar");
+  }
+}
+void end_of_archive(int i){
+    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+
+    FILE *fptr;
+    fptr = fopen("archive.tar","w");
+    char  *nullblock = calloc(512,2);
+    fwrite(nullblock,i,1,fptr);
+    free(nullblock);
+    fclose(fptr);
+    char error[100];
+    sprintf(error,"end_of_archive_with_%d",i);
+    run_extractor(error);
+
+}
 
 
 int main(int argc, char* argv[]){
@@ -291,10 +411,19 @@ int main(int argc, char* argv[]){
     gid();
     size();
     mtime();
-    typeflag();
     magic();
     uname();
     gname();
+    typeflag();
+    overflow(25);
+    overflow(50);
+    overflow(100);
+    empty();
+    end_of_archive(0);
+    end_of_archive(1);
+     end_of_archive(512);
+    end_of_archive(1024);
+
     return 0;
 }
 
