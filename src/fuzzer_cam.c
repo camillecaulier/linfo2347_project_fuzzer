@@ -105,6 +105,7 @@ void create_archive_cam(){
     int selection[8] = {0,0,0,0,0,0,0,0}; //this would mean we tae take the first choice of everything
     test_number = 0;
     archive
+
     while(test_number < maxtest){
         namenumber = test number % maxname;
         snprintf(archive->name,sizeof(archive->name),name[namenumebr]);
