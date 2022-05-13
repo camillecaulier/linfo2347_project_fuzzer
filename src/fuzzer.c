@@ -138,7 +138,7 @@ int run_extractor(char* error){
         goto finally;
     }
     if(strncmp(buf, "*** The program has crashed ***\n", 33)) {
-        printf(buf);
+        // printf(buf);
         // printf("Not the crash message\n");
         goto finally;
     } else {
@@ -172,7 +172,7 @@ void write_archive_file(struct tar_t * archive){
     FILE *fptr;
     fptr = fopen("archive.tar","w");
     int size = random_num(0,2000);
-    snprintf(archive->size,sizeof(archive->size), "%0*lo",11,size);
+    snprintf(archive->size,sizeof(archive->size), "%0*o",11,size);
     calculate_checksum(archive);
         //two blocks of 512 null bytes
         fwrite(archive,512, 1, fptr);
@@ -236,8 +236,6 @@ void tests(struct tar_t * archive,char * header,char*header_name,size_t size){
     sprintf(error, "%s_empty",header_name);
     run_extractor(error);
 
-
-
     //TEST5: NOT NULL TERMINATED
     memset(header,0,sizeof(header));
     memset(header, '4',size);
@@ -246,17 +244,10 @@ void tests(struct tar_t * archive,char * header,char*header_name,size_t size){
     run_extractor(error);
 
     //TEST4:HALF NULL
-    memset(header, 0, size / 2);
+    memset(header, 0, size);
     memset(header, '0', size / 2);
     write_archive_file(archive);
     sprintf(error, "%s_half_zero",header_name);
-    run_extractor(error);
-
-
-    memset(header, 0, size);
-    memset(header, '4', size / 2);
-    write_archive_file(archive);
-    sprintf(error, "%s_half",header_name);
     run_extractor(error);
 
     memset(header, 0, size);
@@ -339,10 +330,10 @@ void mode(){
     snprintf(archive->mode,sizeof(archive->mode), "0%06o", 12345 );
     write_archive_file(archive);
     run_extractor("mode_modif");
-    snprintf(archive->mode,sizeof(archive->mode), "0%06o", "\0\0\0\0\0\0\0\0\0\0");
+    snprintf(archive->mode,sizeof(archive->mode), "0%s", "\0\0\0\0\0\0\0\0\0\0");
     write_archive_file(archive);
     run_extractor("mode_modif");
-    snprintf(archive->mode,sizeof(archive->mode), "%06o", "000000000000");
+    snprintf(archive->mode,sizeof(archive->mode), "%s", "000000");
     write_archive_file(archive);
     run_extractor("mode_modif");
     snprintf(archive->mode,sizeof(archive->mode), "%06o", 00000000000000);
@@ -398,10 +389,10 @@ void mtime(){
     snprintf(archive->mtime,sizeof(archive->mtime), "%06o", 00000000000000);
     write_archive_file(archive);
     run_extractor("time_modif");
-    snprintf(archive->mtime,sizeof(archive->mtime), "%s", 00000000000000);
+    snprintf(archive->mtime,sizeof(archive->mtime), "%o", 00000000000000);
     write_archive_file(archive);
     run_extractor("time_modif");
-    snprintf(archive->mtime,sizeof(archive->mtime), "%s", "oh shit this doesn't work");
+    snprintf(archive->mtime,sizeof(archive->mtime), "%s", "oh shit thi");
     write_archive_file(archive);
     run_extractor("time_modif");
     free(archive);
@@ -428,13 +419,13 @@ void magic(){
     struct tar_t* archive =  calloc(1, sizeof(struct tar_t));
     create_archive_files(archive,512);
     tests(archive,archive->magic,"magic",sizeof(archive->magic));
-    snprintf(archive->magic,sizeof(archive->magic), "%06o", 00000000000000);
+    snprintf(archive->magic,sizeof(archive->magic), "%o", 00000000);
     write_archive_file(archive);
     run_extractor("magic_modif");
-    snprintf(archive->magic,sizeof(archive->magic), "%s", 00000000000000);
+    snprintf(archive->magic,sizeof(archive->magic), "%o", 000000000000);
     write_archive_file(archive);
     run_extractor("magic_modif");
-    snprintf(archive->magic,sizeof(archive->magic), "%s", "oh shit this doesn't work");
+    snprintf(archive->magic,sizeof(archive->magic), "%s", "oh sh");
     write_archive_file(archive);
     run_extractor("magic_modif");
     free(archive);
@@ -530,7 +521,7 @@ void end_of_archive(int i){
 void big_file(){
         FILE* fptr = fopen64("archive.tar", "w");
         struct tar_t* archive = calloc(1, sizeof(struct tar_t));
-        snprintf(archive->name,sizeof(archive->name),"archive_big.txt\0");
+        snprintf(archive->name,sizeof(archive->name),"archive_big.txt");
         snprintf(archive->mode,sizeof(archive->mode), "0%06o", 0000777 );
         snprintf(archive->uid,sizeof(archive-> uid),"0001750");
         snprintf(archive->gid,sizeof(archive->gid), "0001750");
@@ -565,11 +556,11 @@ void big_file(){
         run_extractor("big_file");
 
 }
-void no_archive(){
+int no_archive(){
         FILE* fptr = fopen("archive", "w");
         char error[] = "no_tar";
         struct tar_t* archive = calloc(1, sizeof(struct tar_t));
-        snprintf(archive->name,sizeof(archive->name),"archive_big.txt\0");
+        snprintf(archive->name,sizeof(archive->name),"archive_big.txt");
         snprintf(archive->mode,sizeof(archive->mode), "0%06o", 0000777 );
         snprintf(archive->uid,sizeof(archive-> uid),"0001750");
         snprintf(archive->gid,sizeof(archive->gid), "0001750");
@@ -601,7 +592,7 @@ void no_archive(){
         goto finally;
     }
     if(strncmp(buf, "*** The program has crashed ***\n", 33)) {
-        printf(buf);
+        // printf(buf);
         // printf("Not the crash message\n");
         goto finally;
     } else {
@@ -624,12 +615,12 @@ void no_archive(){
 
 
 }
-fake_write(){
+void fake_write(){
     struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
 
     FILE *fptr;
     fptr = fopen("archive.tar","w");
-    snprintf(archive->name,sizeof(archive->name),"archive_big.txt\0");
+    snprintf(archive->name,sizeof(archive->name),"archive_big.txt");
     snprintf(archive->mode,sizeof(archive->mode), "0%06o", 0000777 );
     snprintf(archive->uid,sizeof(archive-> uid),"0001750");
     snprintf(archive->gid,sizeof(archive->gid), "0001750");
@@ -651,25 +642,25 @@ fake_write(){
 
 int main(int argc, char* argv[]){
     strcpy(extractor, argv[1]);
-     no_null();
-     full_null();
-     mode();
-     uid();
-     gid();
-     size();
-     mtime();
-     magic();
-     uname();
-     gname();
-     typeflag();
-     overflow(25);
-     overflow(50);
-     overflow(100);
-     empty();
-     end_of_archive(0);
-     end_of_archive(1);
-      end_of_archive(512);
-     end_of_archive(1024);
+    no_null();
+    full_null();
+    mode();
+    uid();
+    gid();
+    size();
+    mtime();
+    magic();
+    uname();
+    gname();
+    typeflag();
+    overflow(25);
+    overflow(50);
+    overflow(100);
+    empty();
+    end_of_archive(0);
+    end_of_archive(1);
+    end_of_archive(512);
+    end_of_archive(1024);
     big_file();
     no_archive();
     fake_write();
