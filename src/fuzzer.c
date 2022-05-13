@@ -559,12 +559,93 @@ void big_file(){
 
         fwrite(nullblock,1024,1,fptr);
         free(nullblock);
-        fprintf(stdout,"here\n");
-        fflush(stdout);
         free(archive);
         free(data1);
         fclose(fptr);
         run_extractor("big_file");
+
+}
+void no_archive(){
+        FILE* fptr = fopen("archive", "w");
+        char error[] = "no_tar";
+        struct tar_t* archive = calloc(1, sizeof(struct tar_t));
+        snprintf(archive->name,sizeof(archive->name),"archive_big.txt\0");
+        snprintf(archive->mode,sizeof(archive->mode), "0%06o", 0000777 );
+        snprintf(archive->uid,sizeof(archive-> uid),"0001750");
+        snprintf(archive->gid,sizeof(archive->gid), "0001750");
+        snprintf(archive->size,sizeof(archive->size), "%0*o",11,256);
+        memcpy(archive->magic,TMAGIC,sizeof(archive->magic));
+        char version [2] = {'0','0'};
+        memcpy(archive->version,"00",sizeof(version));
+        calculate_checksum(archive);
+        fwrite(archive,sizeof(struct tar_t), 1, fptr);
+        char  *nullblock = calloc(512,2);
+        fwrite(nullblock,1024,1,fptr);
+        free(nullblock);
+        free(archive);
+        fclose(fptr);
+            int rv = 0;
+    char cmd[250];
+    sprintf(cmd, "%s %s 2>&1", extractor, "archive");
+    char buf[250];
+    FILE *fp;
+    // printf(cmd);
+    // printf("\n");
+
+    if ((fp = popen(cmd, "r")) == NULL) {
+        printf("Error opening pipe!\n");
+        return -1;
+    }
+    if(fgets(buf, 250, fp) == NULL) {
+        // printf("No output\n");
+        goto finally;
+    }
+    if(strncmp(buf, "*** The program has crashed ***\n", 33)) {
+        printf(buf);
+        // printf("Not the crash message\n");
+        goto finally;
+    } else {
+        printf("Crash message %s\n",error);
+        correct +=1;
+
+        char new_name[100];
+        sprintf(new_name,"success_%s.tar",error);
+        rename("archive",new_name);
+        rv = 1;
+        goto finally;
+    }
+    finally:
+    if(pclose(fp) == -1) {
+        printf("Command not found\n");
+        rv = -1;
+    }
+    return rv;
+
+
+
+}
+fake_write(){
+    struct tar_t* archive = (struct tar_t*) calloc(1, sizeof(struct tar_t));
+
+    FILE *fptr;
+    fptr = fopen("archive.tar","w");
+    snprintf(archive->name,sizeof(archive->name),"archive_big.txt\0");
+    snprintf(archive->mode,sizeof(archive->mode), "0%06o", 0000777 );
+    snprintf(archive->uid,sizeof(archive-> uid),"0001750");
+    snprintf(archive->gid,sizeof(archive->gid), "0001750");
+    snprintf(archive->size,sizeof(archive->size), "%0*o",11,256);
+    memcpy(archive->magic,TMAGIC,sizeof(archive->magic));
+    char version [2] = {'0','0'};
+    memcpy(archive->version,"00",sizeof(version));
+    calculate_checksum(archive);
+    fwrite(archive,sizeof(struct tar_t), 1, fptr);
+    char  *nullblock = calloc(512,2);
+    fwrite(nullblock,1024,1,fptr);
+    free(nullblock);
+    free(archive);
+    fclose(fptr);
+    run_extractor("fake_write");
+
 
 }
 
@@ -590,6 +671,8 @@ int main(int argc, char* argv[]){
       end_of_archive(512);
      end_of_archive(1024);
     big_file();
+    no_archive();
+    fake_write();
     return 0;
 }
 
